@@ -1,14 +1,22 @@
 import cv2
+<<<<<<< HEAD
 import time
 from picamera2 import Picamera2
 
 
+=======
+import numpy as np
+import time
+from picamera2 import Picamera2
+
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 class CameraController:
     def __init__(self, resolution=(640, 480), framerate=30):
         # Initialize camera with specific parameters
         self.resolution = resolution
         self.framerate = framerate
         self.camera = Picamera2()
+<<<<<<< HEAD
 
         # Configure camera settings
         self.camera.configure(self.camera.create_still_configuration())
@@ -39,6 +47,37 @@ class CameraController:
             "cv2.CAP_PROP_SATURATION": 1.0,
             "cv2.CAP_PROP_SHARPNESS": 1.0,
             "cv2.CAP_PROP_EXPOSURE": 50000,
+=======
+        
+        # Configure camera settings
+        self.camera.configure(self.camera.create_still_configuration())
+        self.camera.set_controls({
+            'Sharpness': 1.0,
+            'Contrast': 1.0,
+            'Brightness': 0.5,
+            'Saturation': 1.0,
+            'Sharpness': 1.0,
+            'ExposureTime': 50000,
+            'FrameRate': framerate
+        })
+        
+        self.camera.start()
+        
+        # Camera properties
+        self.width = self.resolution[0]
+        self.height = self.resolution[1]
+        
+        # OpenCV settings
+        self.cv_settings = {
+            'cv2.CAP_PROP_FRAME_WIDTH': self.width,
+            'cv2.CAP_PROP_FRAME_HEIGHT': self.height,
+            'cv2.CAP_PROP_FPS': self.framerate,
+            'cv2.CAP_PROP_BRIGHTNESS': 0.5,
+            'cv2.CAP_PROP_CONTRAST': 1.0,
+            'cv2.CAP_PROP_SATURATION': 1.0,
+            'cv2.CAP_PROP_SHARPNESS': 1.0,
+            'cv2.CAP_PROP_EXPOSURE': 50000
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         }
 
     def get_frame(self):
@@ -48,10 +87,17 @@ class CameraController:
         """
         # Capture frame from camera
         frame = self.camera.capture_array()
+<<<<<<< HEAD
 
         # Convert to BGR format (OpenCV uses BGR, not RGB)
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
+=======
+        
+        # Convert to BGR format (OpenCV uses BGR, not RGB)
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         return frame
 
     def get_frame_with_processing(self, processing=None):
@@ -62,11 +108,19 @@ class CameraController:
         """
         # Get raw frame
         frame = self.get_frame()
+<<<<<<< HEAD
 
         # Apply processing if provided
         if processing is not None:
             frame = processing(frame)
 
+=======
+        
+        # Apply processing if provided
+        if processing is not None:
+            frame = processing(frame)
+        
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         return frame
 
     def get_camera_info(self):
@@ -75,6 +129,7 @@ class CameraController:
         :return: Dictionary with camera parameters
         """
         return {
+<<<<<<< HEAD
             "resolution": self.resolution,
             "framerate": self.framerate,
             "width": self.width,
@@ -85,6 +140,19 @@ class CameraController:
             "contrast": 1.0,
             "brightness": 0.5,
             "saturation": 1.0,
+=======
+            'resolution': self.resolution,
+            'framerate': self.framerate,
+            'width': self.width,
+            'height': self.height,
+            'frame_rate': self.framerate,
+            'exposure_time': 50000,
+            'sharpness': 1.0,
+            'contrast': 1.0,
+            'brightness': 0.5,
+            'saturation': 1.0,
+            'sharpness': 1.0
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         }
 
     def start_stream(self, callback=None):
@@ -94,11 +162,16 @@ class CameraController:
         """
         # Start camera stream
         self.camera.start()
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         # Process frames in a loop
         while True:
             # Get frame
             frame = self.get_frame()
+<<<<<<< HEAD
 
             # Call callback if provided
             if callback is not None:
@@ -107,6 +180,16 @@ class CameraController:
             # Sleep briefly to avoid overwhelming the system
             time.sleep(1.0 / self.framerate)
 
+=======
+            
+            # Call callback if provided
+            if callback is not None:
+                callback(frame)
+            
+            # Sleep briefly to avoid overwhelming the system
+            time.sleep(1.0 / self.framerate)
+            
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
             # Check if we should stop
             if self.stop_stream:
                 break
@@ -122,6 +205,12 @@ class CameraController:
         Release camera resources
         """
         self.camera.close()
+<<<<<<< HEAD
 
         # Cleanup GPIO (if applicable)
         # GPIO.cleanup()
+=======
+        
+        # Cleanup GPIO (if applicable)
+        # GPIO.cleanup()
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1

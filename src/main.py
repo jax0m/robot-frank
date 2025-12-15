@@ -2,11 +2,20 @@
 
 import sys
 import os
+<<<<<<< HEAD
+=======
+import time
+import threading
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 import signal
 import logging
 
 # Add the src directory to Python path
+<<<<<<< HEAD
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+=======
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 
 # Import all hardware components
 from hardware.arm.arm_controller import ArmController
@@ -24,21 +33,40 @@ from controllers.websocket.ws_client import WebSocketClient
 # from automation.default_automation import DefaultAutomation # Future functions
 
 # Import configuration
+<<<<<<< HEAD
 # from config.pins import ( # Future
 #     ARM_SERVO1_PIN, ARM_SERVO2_PIN, ARM_SERVO3_PIN, ARM_SERVO4_PIN,
 #     CAMERA_TILT_PIN,
 #     LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN,
 #     LED_STRIP_PIN
 # )
+=======
+from config.pins import (
+    ARM_SERVO1_PIN, ARM_SERVO2_PIN, ARM_SERVO3_PIN, ARM_SERVO4_PIN,
+    CAMERA_TILT_PIN,
+    LEFT_MOTOR_PIN, RIGHT_MOTOR_PIN,
+    LED_STRIP_PIN
+)
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
+<<<<<<< HEAD
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[logging.FileHandler("robot.log"), logging.StreamHandler()],
 )
 
 
+=======
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('robot.log'),
+        logging.StreamHandler()
+    ]
+)
+
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 # Define robot state
 class RobotState:
     def __init__(self):
@@ -52,6 +80,7 @@ class RobotState:
         self.camera_active = False
         self.motors_active = False
         self.leds_active = False
+<<<<<<< HEAD
 
         # Define control status
         self.control_status = {
@@ -180,6 +209,176 @@ class RobotState:
                 "turn_right": self._on_turn_right,
             },
             "leds": {"rainbow": self._on_rainbow, "clear": self._on_clear},
+=======
+        
+        # Define control status
+        self.control_status = {
+            'arm': {
+                'up': False,
+                'down': False,
+                'wrist_up': False,
+                'wrist_down': False,
+                'grip_open': False,
+                'grip_close': False
+            },
+            'camera': {
+                'tilt_up': False,
+                'tilt_down': False
+            },
+            'motors': {
+                'forward': False,
+                'backward': False,
+                'turn_left': False,
+                'turn_right': False
+            },
+            'leds': {
+                'rainbow': False,
+                'clear': False
+            }
+        }
+        
+        # Define control history
+        self.control_history = []
+        
+        # Define control parameters
+        self.control_parameters = {
+            'arm': {
+                'speed': 100,
+                'position': 90
+            },
+            'camera': {
+                'angle': 90
+            },
+            'motors': {
+                'speed': 100,
+                'direction': 'forward'
+            },
+            'leds': {
+                'brightness': 50
+            }
+        }
+        
+        # Define control mappings
+        self.control_mappings = {
+            'arm': {
+                'up': 'arm_up',
+                'down': 'arm_down',
+                'wrist_up': 'wrist_up',
+                'wrist_down': 'wrist_down',
+                'grip_open': 'grip_open',
+                'grip_close': 'grip_close'
+            },
+            'camera': {
+                'tilt_up': 'tilt_up',
+                'tilt_down': 'tilt_down'
+            },
+            'motors': {
+                'forward': 'forward',
+                'backward': 'backward',
+                'turn_left': 'turn_left',
+                'turn_right': 'turn_right'
+            },
+            'leds': {
+                'rainbow': 'rainbow',
+                'clear': 'clear'
+            }
+        }
+        
+        # Define control functions
+        self.control_functions = {
+            'arm_up': self._arm_up,
+            'arm_down': self._arm_down,
+            'wrist_up': self._wrist_up,
+            'wrist_down': self._wrist_down,
+            'grip_open': self._grip_open,
+            'grip_close': self._grip_close,
+            'tilt_up': self._tilt_up,
+            'tilt_down': self._tilt_down,
+            'forward': self._forward,
+            'backward': self._backward,
+            'turn_left': self._turn_left,
+            'turn_right': self._turn_right,
+            'rainbow': self._rainbow,
+            'clear': self._clear
+        }
+        
+        # Define control event handlers
+        self.control_event_handlers = {
+            'arm': {
+                'up': self._on_arm_up,
+                'down': self._on_arm_down,
+                'wrist_up': self._on_wrist_up,
+                'wrist_down': self._on_wrist_down,
+                'grip_open': self._on_grip_open,
+                'grip_close': self._on_grip_close
+            },
+            'camera': {
+                'tilt_up': self._on_tilt_up,
+                'tilt_down': self._on_tilt_down
+            },
+            'motors': {
+                'forward': self._on_forward,
+                'backward': self._on_backward,
+                'turn_left': self._on_turn_left,
+                'turn_right': self._on_turn_right
+            },
+            'leds': {
+                'rainbow': self._on_rainbow,
+                'clear': self._on_clear
+            }
+        }
+        
+        # Define control event handlers
+        self.control_event_handlers = {
+            'arm': {
+                'up': self._on_arm_up,
+                'down': self._on_arm_down,
+                'wrist_up': self._on_wrist_up,
+                'wrist_down': self._on_wrist_down,
+                'grip_open': self._on_grip_open,
+                'grip_close': self._on_grip_close
+            },
+            'camera': {
+                'tilt_up': self._on_tilt_up,
+                'tilt_down': self._on_tilt_down
+            },
+            'motors': {
+                'forward': self._on_forward,
+                'backward': self._on_backward,
+                'turn_left': self._on_turn_left,
+                'turn_right': self._on_turn_right
+            },
+            'leds': {
+                'rainbow': self._on_rainbow,
+                'clear': self._on_clear
+            }
+        }
+        
+        # Define control event handlers
+        self.control_event_handlers = {
+            'arm': {
+                'up': self._on_arm_up,
+                'down': self._on_arm_down,
+                'wrist_up': self._on_wrist_up,
+                'wrist_down': self._on_wrist_down,
+                'grip_open': self._on_grip_open,
+                'grip_close': self._on_grip_close
+            },
+            'camera': {
+                'tilt_up': self._on_tilt_up,
+                'tilt_down': self._on_tilt_down
+            },
+            'motors': {
+                'forward': self._on_forward,
+                'backward': self._on_backward,
+                'turn_left': self._on_turn_left,
+                'turn_right': self._on_turn_right
+            },
+            'leds': {
+                'rainbow': self._on_rainbow,
+                'clear': self._on_clear
+            }
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         }
 
     def _arm_up(self):
@@ -327,6 +526,7 @@ class RobotState:
         # Set up signal handlers
         signal.signal(signal.SIGINT, self._shutdown_handler)
         signal.signal(signal.SIGTERM, self._shutdown_handler)
+<<<<<<< HEAD
 
         # Initialize all components
         self._init_components()
@@ -340,6 +540,21 @@ class RobotState:
         # Wait for shutdown
         self._wait_for_shutdown()
 
+=======
+        
+        # Initialize all components
+        self._init_components()
+        
+        # Start all services
+        self._start_services()
+        
+        # Start the robot
+        self._run_robot()
+        
+        # Wait for shutdown
+        self._wait_for_shutdown()
+        
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         # Shutdown the robot
         self._shutdown()
 
@@ -347,6 +562,7 @@ class RobotState:
         """Initialize all components"""
         # Initialize camera
         self.camera = CameraController()
+<<<<<<< HEAD
 
         # Initialize ultrasonic sensor
         self.ultrasonic = UltrasonicSensor()
@@ -408,10 +624,80 @@ class RobotState:
             "turn_right": self._turn_right,
             "rainbow": self._rainbow,
             "clear": self._clear,
+=======
+        
+        # Initialize ultrasonic sensor
+        self.ultrasonic = UltrasonicSensor()
+        
+        # Initialize camera tilt
+        self.camera_tilt = CameraTiltController()
+        
+        # Initialize arm
+        self.arm = ArmController()
+        
+        # Initialize tank motors
+        self.motors = TankMotorController()
+        
+        # Initialize LEDs
+        self.leds = WS2812Controller()
+        
+        # Initialize web server
+        self.web_server = WebServer()
+        
+        # Initialize WebSocket client
+        self.ws_client = WebSocketClient()
+        
+        # Initialize automation script
+        # self.automation = DefaultAutomation() # Future
+        
+        # Initialize control mappings
+        self.control_mappings = {
+            'arm': {
+                'up': 'arm_up',
+                'down': 'arm_down',
+                'wrist_up': 'wrist_up',
+                'wrist_down': 'wrist_down',
+                'grip_open': 'grip_open',
+                'grip_close': 'grip_close'
+            },
+            'camera': {
+                'tilt_up': 'tilt_up',
+                'tilt_down': 'tilt_down'
+            },
+            'motors': {
+                'forward': 'forward',
+                'backward': 'backward',
+                'turn_left': 'turn_left',
+                'turn_right': 'turn_right'
+            },
+            'leds': {
+                'rainbow': 'rainbow',
+                'clear': 'clear'
+            }
+        }
+        
+        # Initialize control functions
+        self.control_functions = {
+            'arm_up': self._arm_up,
+            'arm_down': self._arm_down,
+            'wrist_up': self._wrist_up,
+            'wrist_down': self._wrist_down,
+            'grip_open': self._grip_open,
+            'grip_close': self._grip_close,
+            'tilt_up': self._tilt_up,
+            'tilt_down': self._tilt_down,
+            'forward': self._forward,
+            'backward': self._backward,
+            'turn_left': self._turn_left,
+            'turn_right': self._turn_right,
+            'rainbow': self._rainbow,
+            'clear': self._clear
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
         }
 
         # Initialize control event handlers
         self.control_event_handlers = {
+<<<<<<< HEAD
             "arm": {
                 "up": self._on_arm_up,
                 "down": self._on_arm_down,
@@ -429,3 +715,28 @@ class RobotState:
             },
             "leds": {"rainbow": self._on_rainbow, "clear": self._on_clear},
         }
+=======
+            'arm': {
+                'up': self._on_arm_up,
+                'down': self._on_arm_down,
+                'wrist_up': self._on_wrist_up,
+                'wrist_down': self._on_wrist_down,
+                'grip_open': self._on_grip_open,
+                'grip_close': self._on_grip_close
+            },
+            'camera': {
+                'tilt_up': self._on_tilt_up,
+                'tilt_down': self._on_tilt_down
+            },
+            'motors': {
+                'forward': self._on_forward,
+                'backward': self._on_backward,
+                'turn_left': self._on_turn_left,
+                'turn_right': self._on_turn_right
+            },
+            'leds': {
+                'rainbow': self._on_rainbow,
+                'clear': self._on_clear
+            }
+        }
+>>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
