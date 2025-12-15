@@ -1,9 +1,6 @@
 import rpi_ws281x as ws2812
-<<<<<<< HEAD
 import math
 
-=======
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 
 class WS2812Controller:
     def __init__(self, num_leds=24, pin=12):
@@ -61,8 +58,4 @@ class WS2812Controller:
         """
         for i in range(self.num_leds):
             self.set_color(i, 0, 0, 0)
-<<<<<<< HEAD
         self.show()
-=======
-        self.show()
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1

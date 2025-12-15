@@ -1,9 +1,6 @@
 import RPi.GPIO as GPIO
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 class CameraTiltController:
     def __init__(self, tilt_pin=18):
         # Initialize GPIO for camera tilt servo
@@ -22,11 +19,7 @@ class CameraTiltController:
         # 0 degrees = 2.5% duty cycle, 180 degrees = 12.5% duty cycle
         duty_cycle = 2.5 + (angle / 180) * 10
         self.pwm.ChangeDutyCycle(duty_cycle)
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
     def get_angle(self):
         """
         Get current camera tilt angle
@@ -41,8 +34,4 @@ class CameraTiltController:
         Stop the camera tilt servo
         """
         self.pwm.stop()
-<<<<<<< HEAD
         GPIO.cleanup()
-=======
-        GPIO.cleanup()
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1

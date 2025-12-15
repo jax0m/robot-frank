@@ -20,8 +20,4 @@ class ArmServoController:
         :return: Current position (0-180)
         """
         # Implementation to read servo position
-<<<<<<< HEAD
         return 0
-=======
-        return 0
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1

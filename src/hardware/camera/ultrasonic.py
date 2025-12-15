@@ -1,10 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
 class UltrasonicSensor:
     def __init__(self, trigger_pin=23, echo_pin=24):
         # Initialize GPIO for ultrasonic sensor
@@ -52,8 +49,4 @@ class UltrasonicSensor:
         """
         Cleanup GPIO resources
         """
-<<<<<<< HEAD
         GPIO.cleanup()
-=======
-        GPIO.cleanup()
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1

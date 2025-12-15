@@ -73,7 +73,6 @@ Initially developed for the [Adeept/RaspTank2 Metal](https://www.adeept.com/rasp
    ```bash
    python src/main.py  # Starts the Flask server
    ```
-<<<<<<< HEAD
 
 ## Roadmap
 
@@ -141,5 +140,3 @@ Initially developed for the [Adeept/RaspTank2 Metal](https://www.adeept.com/rasp
 | 6.1  | **Design for extensibility**      | Modular structure       |
 | 6.2  | **Plan for automation scripts**   | `automation/` directory |
 | 6.3  | **Create scriptable control API** | `api_endpoints.py`      |
-=======
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1

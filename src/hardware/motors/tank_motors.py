@@ -55,8 +55,4 @@ class TankMotorController:
         :return: Current speed (0-100)
         """
         # Implementation to read motor speed
-<<<<<<< HEAD
         return 0
-=======
-        return 0
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1

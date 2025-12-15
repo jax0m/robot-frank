@@ -13,8 +13,4 @@ thread
 imutils
 picamera2
 spidev
-<<<<<<< HEAD
 pre-commit
-=======
-pre-commit
->>>>>>> 86ee538ad2c139a5522b7c643637e764bee9c5a1
