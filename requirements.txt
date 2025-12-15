@@ -1,0 +1,16 @@
+Flask
+Flask-SQLAlchemy
+RPi.GPIO
+rpi_ws281x
+pymodbus
+matplotlib>=3.8
+websockets==13.0
+pandas-stubs
+pandas
+numpy
+opencv-python
+thread
+imutils
+picamera2
+spidev
+pre-commit
