@@ -9,8 +9,6 @@ pandas-stubs
 pandas
 numpy
 opencv-python
-thread
 imutils
 picamera2
 spidev
-pre-commit
