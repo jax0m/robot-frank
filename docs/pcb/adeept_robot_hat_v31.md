@@ -95,13 +95,57 @@ _All public methods (`set_angle`, `set_speed`, `read_ultrasonic`, etc.) will be 
 
 ## Diagram & Images
 
+### Top of HAT
+
+The image displays a top-down view of a purple single-board microcontroller, designed for robotics or embedded projects. The board is densely populated with various electronic components, connectors, and integrated circuits, all labeled with callouts.
+The board features several rows of white terminal blocks and pin headers, providing numerous connection points for sensors, motors, and other peripherals. The overall layout suggests a versatile platform for controlling and interacting with various hardware components.
+The boxes around the "Ultrasonic," "LED1~3," and "X4/X5:RGB" components are a visual aid, possibly from the source material, to group related pins together. The board is populated with various sensors and connectors for robotics and embedded applications.
+
+#### Top 1 of 2
+
 ![Top view of Adeept Robot HAT V3.1 (1 of 2)](<assets/adeept_robot_hat_v3.1_top(1of2).png>)
+
+- MPU6050: Located in the upper-left area, this is a 6-axis motion tracking sensor (accelerometer and gyroscope) used for detecting movement and orientation.
+- Buzzer: A small, black, cylindrical component located near the center of the board, used to generate audible signals.
+- Indicator: A small LED (Light-Emitting Diode) labeled "RD15" in the upper-center, used to provide visual feedback.
+- Type-C USB - CHARGING ONLY
+- Switch: A slide switch on the right side, labeled "OFF" and "ON", used to power the board on or off.
+- Power: 2 pin socket (for battery pack)
+- Battery Indicator: A series of 4 LEDs (Upper most in image being red, followed by 3 green which indicate the charge state (Red + 3 Green = 100%, Red + 0 Green = Nearly depleted).
+- Power Indicator: A single LED, labeled "X5", which serves as a power-on indicator.
+- Servo: A group of red, black, and yellow terminal blocks on the lower left, which are used to connect servo motors.
+- IR: An infrared receiver module, located in the center left section to the immediate right of a WS2812 onboard.
+- WS2812: A type of addressable RGB LED, shown with its integrated circuit (IC).
+- WS2812 Port: A connector designed to interface with WS2812 LEDs, which are commonly used for programmable lighting.
+
+#### Top 2 of 2
 
 ![Top view of Adeept Robot HAT V3.1 (2 of 2)](<assets/adeept_robot_hat_v3.1_top(2of2).png>)
 
-> **Alt‑text:** “Purple Adeept Robot HAT V3.1 stacked on a Raspberry Pi, showing motor ports, servo block, and I²C header.”
+- X8: Line Tracking: This label points to a white header (a row of connection pins) on the upper-left side of the board. This is a dedicated connector for a line-tracking sensor, which is used by robots to follow a black line on the floor.
+- X9: Ultrasonic: This label points to a white header in the center of the board. This connector is for an ultrasonic sensor, which uses sound waves to measure distance to objects.
+- LED1~3: This label highlights a group of three small, white, rectangular connectors. These are the output terminals for connecting external RGB LEDs, which can display a wide range of colors.
+- X4/X5: RGB: This label points to another set of white connectors in the center-right, specifically for connecting RGB LEDs.
+- X1/X2: I2C: This label indicates a group of white terminal blocks on the lower-left. These pins are for the I2C (Inter-Integrated Circuit) communication protocol, a common way to connect sensors and other devices.
+- X6/X7: UART: This label points to another group of white terminal blocks, located on the lower-center. These are for the UART (Universal Asynchronous Receiver/Transmitter) serial communication interface.
+- X3: Light Tracking: This label is directed at a white header on the lower-left side, which is used to connect a light-tracking sensor (such as a photodiode array) that detects the direction of a light source.
+
+### Bottom of HAT
 
 ![Bottom view of Adeept Robot HAT V3.1](assets/adeept_robot_hat_v3.1_bottom.png)
+
+The board features several key components and connectors, which are highlighted and labeled in the image:
+
+- "Adeep Robot HAT v3.0 for Raspberry Pi" - This is the main title printed in the center of the board, clearly identifying its model and purpose.
+- "www.adeept.com" - This URL is printed in the top-left corner, which is the official website of the manufacturer, Adeep.
+- Adeep: The brand logo, a stylized "A" with a gear symbol, is visible in the lower-right section of the board.
+- Motor: This label points to a large, black, dual-row connector located at the top of the board. This is the primary connection for a motor driver, designed to interface with motors (like DC motors or stepper motors) for robot applications. These labels point to four white, female, screw-terminal connectors arranged vertically on the right side of the board. These are standard terminal blocks used to make secure electrical connections to external components.
+  - M1 - Upper-right connector
+  - M2 - Below M1
+  - M3 - Above M4
+  - M4 - Lower-right connector
+
+The red box and the labels "M1," "M2," "M3," and "M4" specifically highlight this group of connectors, which are typically used to connect motor driver boards or other external peripherals to the main controller board.
 
 ## PDF Version
 
