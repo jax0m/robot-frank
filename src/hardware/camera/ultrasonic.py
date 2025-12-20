@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 import time
 
-
 class UltrasonicSensor:
     def __init__(self, trigger_pin=23, echo_pin=24):
         # Initialize GPIO for ultrasonic sensor
@@ -10,11 +9,10 @@ class UltrasonicSensor:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(trigger_pin, GPIO.OUT)
         GPIO.setup(echo_pin, GPIO.IN)
-        self.echo_pin = echo_pin
 
-    def get_distance(self):
+    def get_distance(self, timeout=0.04):
         """
-        Get distance in cm using ultrasonic sensor
+        Get distance in cm using ultrasonic sensor.
         :return: Distance in cm (0-500cm)
         """
         # Send trigger pulse
@@ -22,14 +20,19 @@ class UltrasonicSensor:
         time.sleep(0.00001)
         GPIO.output(self.trigger_pin, False)
 
-        # Measure echo time
-        pulse_start = time.time()
+        # Measure echo time with timeout
+        start = time.time()
         while GPIO.input(self.echo_pin) == 0:
-            pulse_start = time.time()
+            if time.time() - start > timeout:
+                raise TimeoutError("Echo timeout")
+            pass
+        pulse_start = time.time()
 
-        pulse_end = time.time()
         while GPIO.input(self.echo_pin) == 1:
-            pulse_end = time.time()
+            if time.time() - start > timeout:
+                raise TimeoutError("Echo timeout")
+            pass
+        pulse_end = time.time()
 
         # Calculate distance
         pulse_duration = pulse_end - pulse_start
@@ -39,14 +42,20 @@ class UltrasonicSensor:
 
     def is_object_near(self, threshold=10):
         """
-        Check if an object is near (within threshold distance)
-        :param threshold: Distance threshold (in cm)
-        :return: True if object is near, False otherwise
+        Check if an object is near (within threshold distance).
+        :param threshold: Distance threshold in cm.
+        :return: True if object is near, False otherwise.
         """
         return self.get_distance() <= threshold
 
     def stop(self):
         """
-        Cleanup GPIO resources
+        Cleanup GPIO resources.
         """
         GPIO.cleanup()
+
+    def __del__(self):
+        """
+        Ensure GPIO cleanup on object deletion.
+        """
+        self.stop()
