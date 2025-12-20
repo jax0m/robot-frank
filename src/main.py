@@ -142,45 +142,16 @@ class RobotState:
             "leds": {"rainbow": self._on_rainbow, "clear": self._on_clear},
         }
 
-        # Define control event handlers
-        self.control_event_handlers = {
-            "arm": {
-                "up": self._on_arm_up,
-                "down": self._on_arm_down,
-                "wrist_up": self._on_wrist_up,
-                "wrist_down": self._on_wrist_down,
-                "grip_open": self._on_grip_open,
-                "grip_close": self._on_grip_close,
-            },
-            "camera": {"tilt_up": self._on_tilt_up, "tilt_down": self._on_tilt_down},
-            "motors": {
-                "forward": self._on_forward,
-                "backward": self._on_backward,
-                "turn_left": self._on_turn_left,
-                "turn_right": self._on_turn_right,
-            },
-            "leds": {"rainbow": self._on_rainbow, "clear": self._on_clear},
-        }
-
-        # Define control event handlers
-        self.control_event_handlers = {
-            "arm": {
-                "up": self._on_arm_up,
-                "down": self._on_arm_down,
-                "wrist_up": self._on_wrist_up,
-                "wrist_down": self._on_wrist_down,
-                "grip_open": self._on_grip_open,
-                "grip_close": self._on_grip_close,
-            },
-            "camera": {"tilt_up": self._on_tilt_up, "tilt_down": self._on_tilt_down},
-            "motors": {
-                "forward": self._on_forward,
-                "backward": self._on_backward,
-                "turn_left": self._on_turn_left,
-                "turn_right": self._on_turn_right,
-            },
-            "leds": {"rainbow": self._on_rainbow, "clear": self._on_clear},
-        }
+        # Initialize components
+        self.camera = CameraController()
+        self.ultrasonic = UltrasonicSensor()
+        self.camera_tilt = CameraTiltController()
+        self.arm = ArmController()
+        self.motors = TankMotorController()
+        self.leds = WS2812Controller()
+        self.web_server = WebServer()
+        self.ws_client = WebSocketClient()
+        # self.automation = DefaultAutomation() # Future
 
     def _arm_up(self):
         """Move arm up"""
@@ -368,64 +339,27 @@ class RobotState:
 
         # Initialize WebSocket client
         self.ws_client = WebSocketClient()
-
-        # Initialize automation script
         # self.automation = DefaultAutomation() # Future
 
-        # Initialize control mappings
-        self.control_mappings = {
-            "arm": {
-                "up": "arm_up",
-                "down": "arm_down",
-                "wrist_up": "wrist_up",
-                "wrist_down": "wrist_down",
-                "grip_open": "grip_open",
-                "grip_close": "grip_close",
-            },
-            "camera": {"tilt_up": "tilt_up", "tilt_down": "tilt_down"},
-            "motors": {
-                "forward": "forward",
-                "backward": "backward",
-                "turn_left": "turn_left",
-                "turn_right": "turn_right",
-            },
-            "leds": {"rainbow": "rainbow", "clear": "clear"},
-        }
+    def _shutdown_handler(self, signum, frame):
+        """Handle shutdown signals"""
+        self.shutdown_requested = True
 
-        # Initialize control functions
-        self.control_functions = {
-            "arm_up": self._arm_up,
-            "arm_down": self._arm_down,
-            "wrist_up": self._wrist_up,
-            "wrist_down": self._wrist_down,
-            "grip_open": self._grip_open,
-            "grip_close": self._grip_close,
-            "tilt_up": self._tilt_up,
-            "tilt_down": self._tilt_down,
-            "forward": self._forward,
-            "backward": self._backward,
-            "turn_left": self._turn_left,
-            "turn_right": self._turn_right,
-            "rainbow": self._rainbow,
-            "clear": self._clear,
-        }
+    def _shutdown(self):
+        """Shutdown the robot"""
+        self.running = False
+        logging.info("Shutting down robot...")
 
-        # Initialize control event handlers
-        self.control_event_handlers = {
-            "arm": {
-                "up": self._on_arm_up,
-                "down": self._on_arm_down,
-                "wrist_up": self._on_wrist_up,
-                "wrist_down": self._on_wrist_down,
-                "grip_open": self._on_grip_open,
-                "grip_close": self._on_grip_close,
-            },
-            "camera": {"tilt_up": self._on_tilt_up, "tilt_down": self._on_tilt_down},
-            "motors": {
-                "forward": self._on_forward,
-                "backward": self._on_backward,
-                "turn_left": self._on_turn_left,
-                "turn_right": self._on_turn_right,
-            },
-            "leds": {"rainbow": self._on_rainbow, "clear": self._on_clear},
-        }
+    def _wait_for_shutdown(self):
+        """Wait for shutdown signal"""
+        while not self.shutdown_requested:
+            signal.pause()
+
+    def _run_robot(self):
+        """Run the robot"""
+        self.running = True
+        logging.info("Robot started.")
+
+if __name__ == "__main__":
+    state = RobotState()
+    state.start()
