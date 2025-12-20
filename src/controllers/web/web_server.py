@@ -1,1 +1,72 @@
-from flask import Flask, render_template, jsonify\nimport threading\n\nclass WebServer:\n    def __init__(self):\n        self.app = Flask(__name__)\n        self.running = False\n        self.server_thread = None\n\n        # Initialize all hardware components\n        # These will be initialized when the server starts\n\n    def start(self):\n        \"\"\"Start the web server\"\"\"\n        if not self.running:\n            self.running = True\n            self.server_thread = threading.Thread(target=self._run_server, daemon=True)\n            self.server_thread.start()\n            print(\"Web server started on http://localhost:5000\")\n        else:\n            print(\"Web server is already running\")\n\n    def stop(self):\n        \"\"\"Stop the web server\"\"\"\n        if self.running:\n            self.running = False\n            if self.server_thread:\n                self.server_thread.join()\n            print(\"Web server stopped\")\n\n    def _run_server(self):\n        \"\"\"Internal method to run the Flask server\"\"\"\n        if self.running:\n            # Set up routes\n            @self.app.route(\"/\")\n            def index():\n                return render_template(\"index.html\")\n\n            @self.app.route(\"/api/camera\")\n            def camera():\n                # Return camera info\n                return jsonify({\"status\": \"OK\", \"message\": \"Camera accessed\"})\n\n            @self.app.route(\"/api/motors\")\n            def motors():\n                # Return motors info\n                return jsonify({\"status\": \"OK\", \"message\": \"Motors accessed\"})\n\n            @self.app.route(\"/api/leds\")\n            def leds():\n                # Return LEDs info\n                return jsonify({\"status\": \"OK\", \"message\": \"LEDs accessed\"})\n\n            @self.app.route(\"/api/ultrasonic\")\n            def ultrasonic():\n                # Return ultrasonic sensor info\n                return jsonify({\"status\": \"OK\", \"message\": \"Ultrasonic sensor accessed\"})\n\n            # Run the server\n            self.app.run(host=\"0.0.0.0\", port=5000, debug=False)\n\n    def get_status(self):\n        \"\"\"Get the current status of the web server\"\"\"\n        return {\n            \"running\": self.running,\n            \"host\": \"0.0.0.0\",\n            \"port\": 5000,\n            \"url\": \"http://localhost:5000\",\n        }\n
+from flask import Flask, render_template, jsonify
+import threading
+
+
+class WebServer:
+    def __init__(self):
+        self.app = Flask(__name__)
+        self.running = False
+        self.server_thread = None
+
+        # Initialize all hardware components
+        # These will be initialized when the server starts
+
+    def start(self):
+        """Start the web server"""
+        if not self.running:
+            self.running = True
+            self.server_thread = threading.Thread(target=self._run_server, daemon=True)
+            self.server_thread.start()
+            print("Web server started on http://localhost:5000")
+        else:
+            print("Web server is already running")
+
+    def stop(self):
+        """Stop the web server"""
+        if self.running:
+            self.running = False
+            if self.server_thread:
+                self.server_thread.join()
+            print("Web server stopped")
+
+    def _run_server(self):
+        """Internal method to run the Flask server"""
+        if self.running:
+            # Set up routes
+            @self.app.route("/")
+            def index():
+                return render_template("index.html")
+
+            @self.app.route("/api/camera")
+            def camera():
+                # Return camera info
+                return jsonify({"status": "OK", "message": "Camera accessed"})
+
+            @self.app.route("/api/motors")
+            def motors():
+                # Return motors info
+                return jsonify({"status": "OK", "message": "Motors accessed"})
+
+            @self.app.route("/api/leds")
+            def leds():
+                # Return LEDs info
+                return jsonify({"status": "OK", "message": "LEDs accessed"})
+
+            @self.app.route("/api/ultrasonic")
+            def ultrasonic():
+                # Return ultrasonic sensor info
+                return jsonify(
+                    {"status": "OK", "message": "Ultrasonic sensor accessed"}
+                )
+
+            # Run the server
+            self.app.run(host="0.0.0.0", port=5000, debug=False)
+
+    def get_status(self):
+        """Get the current status of the web server"""
+        return {
+            "running": self.running,
+            "host": "0.0.0.0",
+            "port": 5000,
+            "url": "http://localhost:5000",
+        }

@@ -360,6 +360,7 @@ class RobotState:
         self.running = True
         logging.info("Robot started.")
 
+
 if __name__ == "__main__":
     state = RobotState()
     state.start()

@@ -1,1 +1,75 @@
-import cv2\nimport time\nfrom picamera2 import Picamera2\n\nclass CameraController:\n    def __init__(self, resolution=(640, 480), framerate=30):\n        # Initialize camera with specific parameters\n        self.resolution = resolution\n        self.framerate = framerate\n        self.camera = Picamera2()\n        self.stop_stream = False  # Flag to control streaming loop\n\n        # Configure camera settings\n        self.camera.configure(self.camera.create_still_configuration())\n        self.camera.set_controls(\n            {\n                "Sharpness": 1.0,\n                "Contrast": 1.0,\n                "Brightness": 0.5,\n                "Saturation": 1.0,\n                "ExposureTime": 50000,\n                "FrameRate": framerate,\n            }\n        )\n\n        self.camera.start()\n\n        # Camera properties\n        self.width = self.resolution[0]\n        self.height = self.resolution[1]\n\n        # OpenCV settings (removed unused cv_settings)\n\n        # No separate cv_settings dict needed\n\n    def get_frame(self):\n        """\n        Get a single frame from the camera\n        :return: OpenCV frame (numpy array)\n        """\n        # Capture frame from camera\n        frame = self.camera.capture_array()\n\n        # Convert to BGR format (OpenCV uses BGR, not RGB)\n        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)\n\n        return frame\n\n    def get_frame_with_processing(self, processing=None):\n        """\n        Get a frame with optional processing\n        :param processing: Processing function (e.g., edge detection, object detection)\n        :return: Processed frame (numpy array)\n        """\n        # Get raw frame\n        frame = self.get_frame()\n\n        # Apply processing if provided\n        if processing is not None:\n            frame = processing(frame)\n\n        return frame\n\n    def get_camera_info(self):\n        """\n        Get camera information\n        :return: Dictionary with camera parameters\n        """\n        return {\n            "resolution": self.resolution,\n            "framerate": self.framerate,\n            "width": self.width,\n            "height": self.height,\n            "frame_rate": self.framerate,\n            "exposure_time": 50000,\n            "sharpness": 1.0,\n            "contrast": 1.0,\n            "brightness": 0.5,\n            "saturation": 1.0,\n        }\n\n    def start_stream(self, callback=None):\n        """\n        Start camera stream with callback\n        :param callback: Function to call for each frame\n        """\n        # Process frames in a loop\n        while not self.stop_stream:\n            # Get frame\n            frame = self.get_frame()\n\n            # Call callback if provided\n            if callback is not None:\n                callback(frame)\n\n            # Sleep briefly to avoid overwhelming the system\n            time.sleep(1.0 / self.framerate)\n\n    def stop_stream(self):\n        """\n        Stop the camera stream\n        """\n        self.stop_stream = True\n        self.camera.stop()\n\n    def release(self):\n        """\n        Release camera resources\n        """\n        self.camera.close()\n        # Cleanup GPIO (if applicable)\n        # GPIO.cleanup()\n
+import cv2
+import time
+from picamera2 import Picamera2
+
+
+class CameraController:
+    def __init__(self, resolution=(640, 480), framerate=30):
+        # Store configuration
+        self.resolution = resolution
+        self.framerate = framerate
+        self.stop_stream = False  # Flag to control streaming loop
+
+        # Configure and start the camera
+        self.camera = Picamera2()
+        self.camera.configure(self.camera.create_still_configuration())
+        self.camera.set_controls(
+            {
+                "Sharpness": 1.0,
+                "Contrast": 1.0,
+                "Brightness": 0.5,
+                "Saturation": 1.0,
+                "ExposureTime": 50000,
+                "FrameRate": framerate,
+            }
+        )
+        self.camera.start()
+
+        # Camera properties
+        self.width, self.height = self.resolution
+
+    def get_frame(self):
+        """Return a single frame from the camera as a BGR numpy array."""
+        frame = self.camera.capture_array()
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        return frame
+
+    def get_frame_with_processing(self, processing=None):
+        """Return a frame optionally processed by the given function."""
+        frame = self.get_frame()
+        if processing is not None:
+            frame = processing(frame)
+        return frame
+
+    def get_camera_info(self):
+        """Return a dictionary with current camera parameters."""
+        return {
+            "resolution": self.resolution,
+            "framerate": self.framerate,
+            "width": self.width,
+            "height": self.height,
+            "frame_rate": self.framerate,
+            "exposure_time": 50000,
+            "sharpness": 1.0,
+            "contrast": 1.0,
+            "brightness": 0.5,
+            "saturation": 1.0,
+        }
+
+    def start_stream(self, callback=None):
+        """Capture frames continuously until stop_stream is set to True."""
+        while not self.stop_stream:
+            frame = self.get_frame()
+            if callback is not None:
+                callback(frame)
+            time.sleep(1.0 / self.framerate)
+
+    def stop_stream(self):
+        """Signal the streaming loop to stop."""
+        self.stop_stream = True
+        self.camera.stop()
+
+    def release(self):
+        """Release camera resources."""
+        self.camera.close()
+        # GPIO.cleanup()

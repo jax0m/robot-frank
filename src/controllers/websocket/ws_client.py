@@ -1,1 +1,160 @@
-import websockets\nimport json\nimport threading\nimport time\n\nclass WebSocketClient:\n    def __init__(self):\n        self.uri = "ws://localhost:8765"\n        self.running = False\n        self.client_thread = None\n        self.websocket = None\n\n        # Control mappings (action -> method name)\n        self.control_functions = {\n            "arm_up": self._arm_up,\n            "arm_down": self._arm_down,\n            "wrist_up": self._wrist_up,\n            "wrist_down": self._wrist_down,\n            "grip_open": self._grip_open,\n            "grip_close": self._grip_close,\n            "tilt_up": self._tilt_up,\n            "tilt_down": self._tilt_down,\n            "forward": self._forward,\n            "backward": self._backward,\n            "turn_left": self._turn_left,\n            "turn_right": self._turn_right,\n            "rainbow": self._rainbow,\n            "clear": self._clear,\n        }\n\n        # Event handlers for each action\n        self.control_event_handlers = {\n            "arm_up": self._on_arm_up,\n            "arm_down": self._on_arm_down,\n            "wrist_up": self._on_wrist_up,\n            "wrist_down": self._on_wrist_down,\n            "grip_open": self._on_grip_open,\n            "grip_close": self._on_grip_close,\n            "tilt_up": self._on_tilt_up,\n            "tilt_down": self._on_tilt_down,\n            "forward": self._on_forward,\n            "backward": self._on_backward,\n            "turn_left": self._on_turn_left,\n            "turn_right": self._on_turn_right,\n            "rainbow": self._on_rainbow,\n            "clear": self._on_clear,\n        }\n\n        # Status tracking\n        self.control_status = {\n            "arm_up": False,\n            "arm_down": False,\n            "wrist_up": False,\n            "wrist_down": False,\n            "grip_open": False,\n            "grip_close": False,\n            "tilt_up": False,\n            "tilt_down": False,\n            "forward": False,\n            "backward": False,\n            "turn_left": False,\n            "turn_right": False,\n            "rainbow": False,\n            "clear": False,\n        }\n\n        self.control_history = []\n\n    def start(self):\n        """Start the WebSocket client"""\n        if not self.running:\n            self.running = True\n            self.client_thread = threading.Thread(target=self._run_client, daemon=True)\n            self.client_thread.start()\n            print("WebSocket client started")\n        else:\n            print("WebSocket client is already running")\n\n    def stop(self):\n        """Stop the WebSocket client"""\n        if self.running:\n            self.running = False\n            if self.client_thread:\n                self.client_thread.join()\n            print("WebSocket client stopped")\n\n    def _run_client(self):\n        """Internal method to run the WebSocket client"""\n        while self.running:\n            try:\n                # Connect to the WebSocket server\n                self.websocket = websockets.connect(self.uri)\n\n                # Send a handshake message\n                self.websocket.send(\n                    json.dumps({"action": "handshake", "timestamp": time.time()})\n                )\n\n                # Listen for incoming messages\n                while self.running:\n                    # Receive message from server\n                    message = self.websocket.recv()\n\n                    # Parse JSON message\n                    try:\n                        data = json.loads(message)\n\n                        # Process control message\n                        if "action" in data:\n                            action = data["action"]\n                            if action in self.control_functions:\n                                # Call the appropriate control function\n                                self.control_functions[action]()\n\n                                # Update status\n                                self.control_status[action] = True\n\n                                # Add to history\n                                self.control_history.append(\n                                    {\n                                        "action": action,\n                                        "timestamp": time.time(),\n                                    }\n                                )\n\n                                # Invoke event handler if defined\n                                if action in self.control_event_handlers:\n                                    self.control_event_handlers[action]()\n\n                    except json.JSONDecodeError:\n                        print("Invalid JSON message received")\n\n                    except Exception as e:\n                        print(f"Error processing message: {e}")\n\n                    # Brief pause\n                    time.sleep(0.1)\n\n            except Exception as e:\n                print(f"Error connecting to server: {e}")\n\n                # Wait before reconnecting\n                time.sleep(5)\n\n            finally:\n                # Close connection cleanly\n                if self.websocket:\n                    self.websocket.close()\n                # Wait before next attempt\n                time.sleep(1)\n\n    def get_status(self):\n        """Get the current status of the WebSocket client"""\n        return {\n            "running": self.running,\n            "uri": self.uri,\n            "status": "connected" if self.websocket else "disconnected",\n            "control_status": self.control_status,\n        }\n
+import websockets
+import json
+import threading
+import time
+
+
+class WebSocketClient:
+    def __init__(self):
+        self.uri = "ws://localhost:8765"
+        self.running = False
+        self.client_thread = None
+        self.websocket = None
+
+        # Control mappings (action -> method name)
+        self.control_functions = {
+            "arm_up": self._arm_up,
+            "arm_down": self._arm_down,
+            "wrist_up": self._wrist_up,
+            "wrist_down": self._wrist_down,
+            "grip_open": self._grip_open,
+            "grip_close": self._grip_close,
+            "tilt_up": self._tilt_up,
+            "tilt_down": self._tilt_down,
+            "forward": self._forward,
+            "backward": self._backward,
+            "turn_left": self._turn_left,
+            "turn_right": self._turn_right,
+            "rainbow": self._rainbow,
+            "clear": self._clear,
+        }
+
+        # Event handlers for each action
+        self.control_event_handlers = {
+            "arm_up": self._on_arm_up,
+            "arm_down": self._on_arm_down,
+            "wrist_up": self._on_wrist_up,
+            "wrist_down": self._on_wrist_down,
+            "grip_open": self._on_grip_open,
+            "grip_close": self._on_grip_close,
+            "tilt_up": self._on_tilt_up,
+            "tilt_down": self._on_tilt_down,
+            "forward": self._on_forward,
+            "backward": self._on_backward,
+            "turn_left": self._on_turn_left,
+            "turn_right": self._on_turn_right,
+            "rainbow": self._on_rainbow,
+            "clear": self._on_clear,
+        }
+
+        # Status tracking
+        self.control_status = {
+            "arm_up": False,
+            "arm_down": False,
+            "wrist_up": False,
+            "wrist_down": False,
+            "grip_open": False,
+            "grip_close": False,
+            "tilt_up": False,
+            "tilt_down": False,
+            "forward": False,
+            "backward": False,
+            "turn_left": False,
+            "turn_right": False,
+            "rainbow": False,
+            "clear": False,
+        }
+
+        self.control_history = []
+
+    def start(self):
+        """Start the WebSocket client"""
+        if not self.running:
+            self.running = True
+            self.client_thread = threading.Thread(target=self._run_client, daemon=True)
+            self.client_thread.start()
+            print("WebSocket client started")
+        else:
+            print("WebSocket client is already running")
+
+    def stop(self):
+        """Stop the WebSocket client"""
+        if self.running:
+            self.running = False
+            if self.client_thread:
+                self.client_thread.join()
+            print("WebSocket client stopped")
+
+    def _run_client(self):
+        """Internal method to run the WebSocket client"""
+        while self.running:
+            try:
+                # Connect to the WebSocket server
+                self.websocket = websockets.connect(self.uri)
+
+                # Send a handshake message
+                self.websocket.send(
+                    json.dumps({"action": "handshake", "timestamp": time.time()})
+                )
+
+                # Listen for incoming messages
+                while self.running:
+                    # Receive message from server
+                    message = self.websocket.recv()
+
+                    # Parse JSON message
+                    try:
+                        data = json.loads(message)
+
+                        # Process control message
+                        if "action" in data:
+                            action = data["action"]
+                            if action in self.control_functions:
+                                # Call the appropriate control function
+                                self.control_functions[action]()
+
+                                # Update status
+                                self.control_status[action] = True
+
+                                # Add to history
+                                self.control_history.append(
+                                    {
+                                        "action": action,
+                                        "timestamp": time.time(),
+                                    }
+                                )
+
+                                # Invoke event handler if defined
+                                if action in self.control_event_handlers:
+                                    self.control_event_handlers[action]()
+
+                    except json.JSONDecodeError:
+                        print("Invalid JSON message received")
+
+                    except Exception as e:
+                        print(f"Error processing message: {e}")
+
+                    # Brief pause
+                    time.sleep(0.1)
+
+            except Exception as e:
+                print(f"Error connecting to server: {e}")
+
+                # Wait before reconnecting
+                time.sleep(5)
+
+            finally:
+                # Close connection cleanly
+                if self.websocket:
+                    self.websocket.close()
+                # Wait before next attempt
+                time.sleep(1)
+
+    def get_status(self):
+        """Get the current status of the WebSocket client"""
+        return {
+            "running": self.running,
+            "uri": self.uri,
+            "status": "connected" if self.websocket else "disconnected",
+            "control_status": self.control_status,
+        }

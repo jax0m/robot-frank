@@ -1,5 +1,6 @@
 class ArmServoController:
     """Controller for managing four ARM servos via GPIO."""
+
     def __init__(self) -> None:
         """Initialize GPIO pins for the 4 servos."""
         pass
