@@ -2,6 +2,8 @@ Flask
 Flask-SQLAlchemy
 RPi.GPIO
 rpi_ws281x
+rpi5_ws2812
+pyyaml
 pymodbus
 matplotlib>=3.8
 websockets==13.0

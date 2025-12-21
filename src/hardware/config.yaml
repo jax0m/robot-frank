@@ -86,15 +86,6 @@ gpio:
   uart_rx: 15 # BCM15 – UART RX
   uart_tx: 14 # BCM14 – UART TX
 
-  # ---- WS2812 / LED‑strip specific entry ---------------------------
-  # (kept here for convenience; the same pin is also referenced as
-  # `gpio.ws2812_data` above)
-  led_strip:
-    data_pin: 12 # Same pin used for ws2812_data
-    pwm_channel: 3 # PWM channel on PCA9685 that drives the strip
-    max_brightness: 255 # 0‑255 (8‑bit brightness)
-    color_order: "GRB" # WS2812 expects GRB colour order
-
   # ---- Battery‑level monitor (optional) ---------------------------
   battery_monitor:
     low_battery_led: 21 # BCM21 – lights when voltage falls below threshold
@@ -175,24 +166,11 @@ spi_mappings:
 # ---------------------------------------------------------------------------
 leds:
   body:
+    name: body
     count: 14 # number of LEDs on the external strip
     bus: 0 # spi bus
-    device: 0 # device index on that bus
-    frequency: 800000 # frequency
-    dma: 10
-    invert: false
-    brightness: 255
-    rgb_type: GRB
-    # optional: you can add a “offset” if you ever chain strips
-
-  onboard:
-    count: 2
-    bus: 0
-    device: 1
-    frequency: 800000
-    dma: 10
-    invert: false
-    brightness: 255
+    device: 1 # device index on that bus
+    brightness: 1.0 # 0.0 - 1.0
 
 # -----------------------------------------------------------------
 # 6️⃣ Register map for each I²C device (helpful for generated code)
