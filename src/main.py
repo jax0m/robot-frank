@@ -14,7 +14,7 @@ from hardware.camera.camera import CameraController
 from hardware.camera.camera_tilt import CameraTiltController
 from hardware.camera.ultrasonic import UltrasonicSensor
 from hardware.motors.tank_motors import TankMotorController
-from hardware.leds.ws2812 import WS2812Controller
+import hardware.leds.handler as led_controller
 
 # Import controllers
 from controllers.web.web_server import WebServer
@@ -148,7 +148,7 @@ class RobotState:
         self.camera_tilt = CameraTiltController()
         self.arm = ArmController()
         self.motors = TankMotorController()
-        self.leds = WS2812Controller()
+        self.leds = led_controller.spi_leds()
         self.web_server = WebServer()
         self.ws_client = WebSocketClient()
         # self.automation = DefaultAutomation() # Future
@@ -332,7 +332,7 @@ class RobotState:
         self.motors = TankMotorController()
 
         # Initialize LEDs
-        self.leds = WS2812Controller()
+        self.leds = led_controller.spi_leds()
 
         # Initialize web server
         self.web_server = WebServer()

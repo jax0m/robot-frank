@@ -30,8 +30,11 @@ Initially developed for the [Adeept/RaspTank2 Metal](https://www.adeept.com/rasp
 
 ```text
 /robot-pi
+├── /docs                # Documentation
 ├── /src
 │   ├── /hardware        # Hardware-specific drivers (pin-abstracted)
+│   │   ├── /config      # Configuration files
+│   │   │   └── config.yaml  # Main hardware config
 │   │   ├── /arm         # 4-servo arm control
 │   │   ├── /camera      # Tilt servo, ultrasonic sensor, camera handler
 │   │   ├── /motors      # Tank treads
@@ -50,7 +53,6 @@ Initially developed for the [Adeept/RaspTank2 Metal](https://www.adeept.com/rasp
 │   │
 │   └── main.py          # Entry point
 │
-├── /docs                # Documentation
 ├── /tests               # Unit/integration tests
 ├── requirements.txt     # Python dependencies
 └── README.md            # This file

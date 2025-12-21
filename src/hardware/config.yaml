@@ -90,7 +90,7 @@ gpio:
   # (kept here for convenience; the same pin is also referenced as
   # `gpio.ws2812_data` above)
   led_strip:
-    data_pin: 18 # Same pin used for ws2812_data
+    data_pin: 12 # Same pin used for ws2812_data
     pwm_channel: 3 # PWM channel on PCA9685 that drives the strip
     max_brightness: 255 # 0‑255 (8‑bit brightness)
     color_order: "GRB" # WS2812 expects GRB colour order
@@ -138,13 +138,6 @@ pwm:
     dir_reverse_pin: 29
     enable_pin: 30
 
-  # ----- WS2812 / LED strip ------------------------------------------------
-  led_strip:
-    data_pin: 18 # Same pin used for ws2812_data
-    pwm_channel: 3 # PWM channel on PCA9685 that drives the strip
-    max_brightness: 255 # 0‑255 (8‑bit brightness)
-    color_order: "GRB" # WS2812 expects GRB colour order
-
   # ----- Battery‑level monitor (optional) ----------------------------
   battery_monitor:
     low_battery_led: 21 # BCM21 – lights when voltage falls below threshold
@@ -176,6 +169,30 @@ spi_mappings:
   4: { mosi: 6, miso: 5, sclk: 7, ce0: 4, ce1: 25 }
   5: { mosi: 14, miso: 13, sclk: 15, ce0: 12, ce1: 26 }
   6: { mosi: 20, miso: 19, sclk: 21, ce0: 18, ce1: 27 }
+
+# ---------------------------------------------------------------------------
+# LED strip configuration – split into logical groups
+# ---------------------------------------------------------------------------
+leds:
+  body:
+    count: 14 # number of LEDs on the external strip
+    bus: 0 # spi bus
+    device: 0 # device index on that bus
+    frequency: 800000 # frequency
+    dma: 10
+    invert: false
+    brightness: 255
+    rgb_type: GRB
+    # optional: you can add a “offset” if you ever chain strips
+
+  onboard:
+    count: 2
+    bus: 0
+    device: 1
+    frequency: 800000
+    dma: 10
+    invert: false
+    brightness: 255
 
 # -----------------------------------------------------------------
 # 6️⃣ Register map for each I²C device (helpful for generated code)
