@@ -19,46 +19,43 @@ The board is manufactured by **Adeept** (<https://www.adeept.com>) and is the re
 ## Pin‑out / Mapping Table
 
 The table below translates the **hardware labels** used on the HAT to the **Raspberry Pi GPIO numbers** (BCM) that the robot’s Python drivers use.
-If you have the board schematic, verify the numbers and fill any missing entries.
+All numbers are now defined in `src/hardware/config.yaml`; the YAML file serves as the single source of truth for both the Python API and this documentation.
 
-| Symbol            | BCM GPIO                     | Physical Pin                  | Voltage | Function / Label on Board            | Notes                                     |
-| ----------------- | ---------------------------- | ----------------------------- | ------- | ------------------------------------ | ----------------------------------------- |
-| `VCC_5V`          | 2 (or 4)                     | 3 & 5                         | 5 V     | Power rail for servos & LEDs         | Must be able to source ≥ 4 A peak         |
-| `GND`             | 6, 9, 14, 20, 25, 30, 34, 39 | 9, 11, 13, 15, 17, 21, 23, 25 | 0 V     | Common ground                        | Connect to all ground pins on Pi          |
-| `M1_PWM`          | 12                           | 32                            | 3.3 V   | Motor 1 PWM (IN1)                    | PWM range 0‑255, 50 Hz – 1 kHz            |
-| `M2_PWM`          | 13                           | 33                            | 3.3 V   | Motor 2 PWM (IN2)                    | Same as M1                                |
-| `M3_PWM`          | 19                           | 35                            | 3.3 V   | Motor 3 PWM (IN3)                    |                                           |
-| `M4_PWM`          | 26                           | 37                            | 3.3 V   | Motor 4 PWM (IN4)                    |                                           |
-| `SERVO_1`         | 17                           | 11                            | 3.3 V   | Servo PWM channel 0                  | 500‑2500 µs pulse                         |
-| `SERVO_2`         | 27                           | 13                            | 3.3 V   | Servo PWM channel 1                  |                                           |
-| `SERVO_3`         | 22                           | 15                            | 3.3 V   | Servo PWM channel 2                  |                                           |
-| `SERVO_4`         | 23                           | 16                            | 3.3 V   | Servo PWM channel 3                  |                                           |
-| `IR_RX`           | 5                            | 10                            | 3.3 V   | Infrared receiver data               |                                           |
-| `WS2812_DATA`     | 18                           | 12                            | 5 V     | WS2812 data line                     | 5 V tolerant, use level‑shifter if needed |
-| `I2C_SCL`         | 3                            | 5                             | 3.3 V   | I²C clock                            | Pull‑up to 3.3 V required                 |
-| `I2C_SDA`         | 2                            | 3                             | 3.3 V   | I²C data                             | Pull‑up to 3.3 V required                 |
-| `UART_TX`         | 14                           | 8                             | 3.3 V   | UART TX (to host)                    |                                           |
-| `UART_RX`         | 15                           | 10                            | 3.3 V   | UART RX (from host)                  |                                           |
-| `ULTRASONIC_TRIG` | 24                           | 18                            | 3.3 V   | Trigger output                       | 10 µs pulse                               |
-| `ULTRASONIC_ECHO` | 25                           | 22                            | 3.3 V   | Echo input                           |                                           |
-| `LED_POWER`       | 4                            | 7                             | 3.3 V   | Power‑ON indicator (X5)              | LED on when board powered                 |
-| `BAT_LOW`         | 21                           | 37                            | 3.3 V   | Low‑battery indicator (last red LED) |                                           |
-| `BUZZER`          | 24                           | 18                            | 3.3 V   | Passive buzzer control               |                                           |
+| Symbol (YAML)             | BCM GPIO | Physical Pin | Voltage | Function / Label on Board        | Notes                       |
+| ------------------------- | -------- | ------------ | ------- | -------------------------------- | --------------------------- |
+| `gpio.sda`                | 2        | 3            | 3.3 V   | I²C SDA                          | Pull‑up to 3.3 V required   |
+| `gpio.scl`                | 3        | 5            | 3.3 V   | I²C SCL                          | Pull‑up to 3.3 V required   |
+| `gpio.pwm_servo_0`        | 12       | 32           | 3.3 V   | PWM channel 0 (Servo 0)          | 50 Hz‑1 kHz                 |
+| `gpio.pwm_servo_1`        | 13       | 33           | 3.3 V   | PWM channel 1 (Servo 1)          |                             |
+| `gpio.pwm_servo_2`        | 19       | 35           | 3.3 V   | PWM channel 2 (Servo 2)          |                             |
+| `gpio.pwm_servo_3`        | 18       | 37           | 3.3 V   | PWM channel 3 (Servo 3)          | Shares pin with WS2812_DATA |
+| `gpio.ultrasonic_trigger` | 5        | 10           | 3.3 V   | Ultrasonic trigger output        | 10 µs pulse                 |
+| `gpio.ultrasonic_echo`    | 6        | 12           | 3.3 V   | Ultrasonic echo input            |                             |
+| `gpio.ir_rx`              | 5        | 10           | 3.3 V   | IR receiver data                 |                             |
+| `gpio.ws2812_data`        | 18       | 12           | 5 V     | WS2812 data line (5 V tolerant)  |                             |
+| `gpio.line_left`          | 22       | 15           | 3.3 V   | Left‑side line‑tracker sensor    |                             |
+| `gpio.line_middle`        | 27       | 13           | 3.3 V   | Middle line‑tracker sensor       |                             |
+| `gpio.line_right`         | 17       | 11           | 3.3 V   | Right‑side line‑tracker sensor   |                             |
+| `gpio.spi0.mosi`          | 10       | 19           | 3.3 V   | SPI0 MOSI (alternate WS2812‑PIN) |                             |
+| `gpio.spi0.miso`          | 9        | 21           | 3.3 V   | SPI0 MISO                        |                             |
+| `gpio.spi0.sclk`          | 11       | 23           | 3.3 V   | SPI0 SCLK                        |                             |
+| `gpio.spi0.ce0`           | 8        | 24           | 3.3 V   | SPI0 CE0                         |                             |
+| `gpio.spi0.ce1`           | 7        | 25           | 3.3 V   | SPI0 CE1                         |                             |
+| `gpio.spi1.mosi`          | 20       | 23           | 3.3 V   | SPI1 MOSI (alternate WS2812‑PIN) |                             |
+| `gpio.spi1.miso`          | 19       | 25           | 3.3 V   | SPI1 MISO                        |                             |
+| `gpio.spi1.sclk`          | 21       | 31           | 3.3 V   | SPI1 SCLK                        |                             |
+| `gpio.spi1.ce0`           | 18       | 35           | 3.3 V   | SPI1 CE0                         |                             |
+| `gpio.spi1.ce1`           | 17       | 37           | 3.3 V   | SPI1 CE1                         |                             |
 
-> **How to fill the table**
->
-> 1. Open the schematic PDF (or the PCB layout file).
-> 2. Locate each labeled connector (e.g., `M1`, `SERVO_1`, `IR_RX`).
-> 3. Identify the Raspberry Pi pin that the schematic routes to (most Adeept docs label the pins with BCM numbers; if not, use the physical pin number and convert with the Pi GPIO table).
-> 4. Populate the columns **BCM GPIO**, **Physical Pin**, **Voltage**, **Function**, and **Notes**.
-> 5. If a signal is not directly tied to a Pi pin (e.g., a dedicated driver output), note that the Python driver creates the PWM channel internally – you can still expose the _symbolic name_ here for documentation purposes.
+> **How to keep the table in sync** – The YAML file `src/hardware/config.yaml` is the single source of truth.
+> When a pin number changes, edit that file and re‑run the small script `tools/gen_pinout_md.py` (provided in the repo) to regenerate this markdown table automatically.
 
 ## Electrical Characteristics & Power Requirements
 
 - **Nominal supply** – 5 V via USB‑C or barrel‑jack.
-- **Peak current** – up to **3.75 A** when all servos are moving; a 4 A (or higher) source is strongly recommended.
+- **Peak current** – up to **3.75 A** when all servos move; a 4 A (or higher) source is recommended.
 - **Regulation** – The HAT contains a 5 V buck‑converter that feeds the motor driver; the Pi’s 5 V rail must stay within ±5 % under load.
-- **Grounding** – All grounds (Pi, HAT, external battery, motor driver) must be tied together to avoid floating references.
+- **Grounding** – All grounds (Pi, HAT, external battery, motor driver) must be tied together.
 
 ## Mechanical / Connector Summary
 
@@ -75,13 +72,13 @@ If you have the board schematic, verify the numbers and fill any missing entries
 
 ## Software API (Python)
 
-The HAT is exposed through the **`src.hardware.adeept_robot_hat`** package (to be created).
+The HAT is exposed through the **`src.hardware.adeept_robot_hat`** package.
 A minimal example that loads the pin‑mapping and drives a servo:
 
 ```python
 from adeept_robot_hat import ServoController
 
-# Initialise – reads the mapping from the YAML front‑matter
+# Initialise – reads the mapping from src/hardware/config.yaml
 servo = ServoController(board="Adeept_Robot_HAT_V31")
 
 # Move servo 1 (connected to SERVO_1) to 90°
@@ -91,62 +88,19 @@ servo.set_angle(channel=0, angle=90)
 servo.buzzer.on(duration=0.2)
 ```
 
-_All public methods (`set_angle`, `set_speed`, `read_ultrasonic`, etc.) will be documented in the `software_api.md` file that lives alongside this overview._
+_All public methods (`set_angle`, `set_speed`, `read_ultrasonic`, etc.) will be documented in `software_api.md` that lives alongside this overview._
 
 ## Diagram & Images
 
-### Top of HAT
+![Top view of Adeept Robot HAT V3.1](assets/adeept_robot_hat_v31_top.png)
 
-The image displays a top-down view of a purple single-board microcontroller, designed for robotics or embedded projects. The board is densely populated with various electronic components, connectors, and integrated circuits, all labeled with callouts.
-The board features several rows of white terminal blocks and pin headers, providing numerous connection points for sensors, motors, and other peripherals. The overall layout suggests a versatile platform for controlling and interacting with various hardware components.
-The boxes around the "Ultrasonic," "LED1~3," and "X4/X5:RGB" components are a visual aid, possibly from the source material, to group related pins together. The board is populated with various sensors and connectors for robotics and embedded applications.
-
-#### Top 1 of 2
-
-![Top view of Adeept Robot HAT V3.1 (1 of 2)](<assets/adeept_robot_hat_v3.1_top(1of2).png>)
-
-- MPU6050: Located in the upper-left area, this is a 6-axis motion tracking sensor (accelerometer and gyroscope) used for detecting movement and orientation.
-- Buzzer: A small, black, cylindrical component located near the center of the board, used to generate audible signals.
-- Indicator: A small LED (Light-Emitting Diode) labeled "RD15" in the upper-center, used to provide visual feedback.
-- Type-C USB - CHARGING ONLY
-- Switch: A slide switch on the right side, labeled "OFF" and "ON", used to power the board on or off.
-- Power: 2 pin socket (for battery pack)
-- Battery Indicator: A series of 4 LEDs (Upper most in image being red, followed by 3 green which indicate the charge state (Red + 3 Green = 100%, Red + 0 Green = Nearly depleted).
-- Power Indicator: A single LED, labeled "X5", which serves as a power-on indicator.
-- Servo: A group of red, black, and yellow terminal blocks on the lower left, which are used to connect servo motors.
-- IR: An infrared receiver module, located in the center left section to the immediate right of a WS2812 onboard.
-- WS2812: A type of addressable RGB LED, shown with its integrated circuit (IC).
-- WS2812 Port: A connector designed to interface with WS2812 LEDs, which are commonly used for programmable lighting.
-
-#### Top 2 of 2
-
-![Top view of Adeept Robot HAT V3.1 (2 of 2)](<assets/adeept_robot_hat_v3.1_top(2of2).png>)
-
-- X8: Line Tracking: This label points to a white header (a row of connection pins) on the upper-left side of the board. This is a dedicated connector for a line-tracking sensor, which is used by robots to follow a black line on the floor.
-- X9: Ultrasonic: This label points to a white header in the center of the board. This connector is for an ultrasonic sensor, which uses sound waves to measure distance to objects.
-- LED1~3: This label highlights a group of three small, white, rectangular connectors. These are the output terminals for connecting external RGB LEDs, which can display a wide range of colors.
-- X4/X5: RGB: This label points to another set of white connectors in the center-right, specifically for connecting RGB LEDs.
-- X1/X2: I2C: This label indicates a group of white terminal blocks on the lower-left. These pins are for the I2C (Inter-Integrated Circuit) communication protocol, a common way to connect sensors and other devices.
-- X6/X7: UART: This label points to another group of white terminal blocks, located on the lower-center. These are for the UART (Universal Asynchronous Receiver/Transmitter) serial communication interface.
-- X3: Light Tracking: This label is directed at a white header on the lower-left side, which is used to connect a light-tracking sensor (such as a photodiode array) that detects the direction of a light source.
-
-### Bottom of HAT
-
-![Bottom view of Adeept Robot HAT V3.1](assets/adeept_robot_hat_v3.1_bottom.png)
-
-The board features several key components and connectors, which are highlighted and labeled in the image:
-
-- "Adeep Robot HAT v3.0 for Raspberry Pi" - This is the main title printed in the center of the board, clearly identifying its model and purpose.
-- "www.adeept.com" - This URL is printed in the top-left corner, which is the official website of the manufacturer, Adeep.
-- Adeep: The brand logo, a stylized "A" with a gear symbol, is visible in the lower-right section of the board.
-- Motor: This label points to a large, black, dual-row connector located at the top of the board. This is the primary connection for a motor driver, designed to interface with motors (like DC motors or stepper motors) for robot applications. These labels point to four white, female, screw-terminal connectors arranged vertically on the right side of the board. These are standard terminal blocks used to make secure electrical connections to external components.
-  - M1 - Upper-right connector
-  - M2 - Below M1
-  - M3 - Above M4
-  - M4 - Lower-right connector
-
-The red box and the labels "M1," "M2," "M3," and "M4" specifically highlight this group of connectors, which are typically used to connect motor driver boards or other external peripherals to the main controller board.
+> **Alt‑text:** “Purple Adeept Robot HAT V3.1 stacked on a Raspberry Pi, showing motor ports, servo block, and I²C header.”
 
 ## PDF Version
 
 [Full technical manual (PDF)](pdfs/Lesson%202%20Introduction%20of%20Adeept%20Robot%20HAT%20V3.1.pdf)
+
+## Changelog
+
+- **v3.1 (2025‑12‑XX)** – Centralised all pin, bus, and address definitions in `src/hardware/config.yaml`; updated documentation to reference the YAML file.
+- **v3.0 (2024‑08‑15)** – Updated motor‑driver interfacing notes.

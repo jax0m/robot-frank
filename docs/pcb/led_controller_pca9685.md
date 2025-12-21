@@ -131,8 +131,6 @@ The diagram is organized into several functional blocks that interact to control
 
 The image is a pinout diagram, titled "Fig 2. Pin configuration for TSSOP28," which shows the physical layout and functions of the pins for the PCA9685PW and PCA9685PW/Q900 integrated circuits in a TSSOP-28 (Thin Shrink Small Outline Package) footprint.
 
-### Key Information from the Diagram
-
 - **Device:** The part number is listed as "PCA9685PW" and "PCA9685PW/Q900". This indicates two variants of the same chip.
 - **Package:** TSSOP-28 (Thin Shrink Small Outline Package, 28 pins). The device is a rectangular integrated circuit with 28 pins arranged in two parallel rows of 14 pins each.
 - **Pinout:** The pins are numbered sequentially from 1 to 28.
@@ -193,8 +191,6 @@ The diagram shows that the PCA9685 is a 16-channel PWM controller (16 LED output
 
 The image is a pinout diagram, titled "Fig 3. Pin configuration for HVQFN28," which displays the physical layout and function of the pins for the PCA9685BS integrated circuit in a 28-pin HVQFN (High-Voltage Quad Flat No-leads) package.
 
-### Key Information from the Diagram
-
 - **Device:** The part number is "PCA9685BS".
 - **Package:** HVQFN28 (High-Voltage Quad Flat No-leads, 28 pins). This is a surface-mount package with a square footprint and pins extending out from all four sides. The diagram shows a top-down view, so the pins are arranged around the perimeter of the device.
 - **Pinout:** The pins are numbered from 1 to 28 in a counter-clockwise sequence around the package.
@@ -232,7 +228,7 @@ The pins on the top and right sides of the chip are labeled as follows:
 - **Pin 27 (Top Right):** `LED1`
 - **Pin 28 (Top Right):** `LED0`
 
-### Summary of Functions
+### Functions
 
 The diagram shows that the PCA9685BS is a 16-channel PWM controller (16 LED outputs), with the following key control pins:
 
@@ -299,17 +295,11 @@ Remark: Using reserved I 2 C-bus addresses will interfere with other devices, bu
 
 - PCA9685 LED All Call address (1110 000) and Software Reset (0000 0110) which are active on start-up
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 - PCA9564 (0000 000) or PCA9665 (1110 000) slave address which is active on start-up
 - 'reserved for future use' I 2 C-bus addresses (0000 011, 1111 1XX)
 - slave devices that use the 10-bit addressing scheme (1111 0XX)
 - slave devices that are designed to respond to the General Call address (0000 000) which is used as the software reset address
 - High-speed mode (Hs-mode) master code (0000 1XX)
-
-<!-- image -->
 
 The last bit of the address byte defines the operation to be performed. When set to logic 1 a read is selected, while a logic 0 selects a write operation.
 
@@ -339,15 +329,9 @@ Remark: The default LED Sub Call I 2 C-bus addresses may be used as regular I 2 
 
 PCA9685_2
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 ## 7.1.4 Software Reset I 2 C-bus address
 
 The address shown inFigure5 is used when a reset of the PCA9685 needs to be performed by the master. The Software Reset address (SWRST Call) must be used with R/W = logic 0. If R/ W = logic 1, the PCA9685 does not acknowledge the SWRST. See Section 7.6 'Softw are reset' for more detail.
-
-<!-- image -->
 
 Remark: The Software Reset I 2 C-bus address is a reserved address and cannot be used as a regular I 2 C-bus slave address or as an LED All Call or LED Sub Call address.
 
@@ -356,8 +340,6 @@ Remark: The Software Reset I 2 C-bus address is a reserved address and cannot be
 Following the successful acknowledgement of the slave address, LED All Call address or LED Sub Call address, the bus master will send a byte to the PCA9685, which will be stored in the Control register.
 
 This register is used as a pointer to determine which register will be accessed.
-
-<!-- image -->
 
 ## 7.3 Register definitions
 
@@ -537,14 +519,6 @@ An example of the use of the RESTART bit would be the restoring of a customer's 
 
 1. Two methods can be used to do an orderly shutdown. The fastest is to write a logic 1 to bit 4 in register ALL_LED_OFF_H. The other method is to write logic 1 to bit 4 in each active PWM channel LEDn_OFF_H register.
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 ## 7.3.2 Mode register 2, MODE2
 
 Table 5. MODE2 - Mode register 2 (address 01h) bit description Legend: \* default value.
@@ -582,8 +556,6 @@ The ON time, which is programmable, will be the time the LED output will be asse
 
 The following two examples illustrate how to calculate values to be loaded into these registers.
 
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 Example 1: (assumes that the LED0 output is used and (delay time) + (PWM duty cycle) £ 100 %)
 
 Delay time = 10 %; PWM duty cycle = 20 % (LED on time = 20 %; LED off time = 80 %).
@@ -599,8 +571,6 @@ LED on time = 20 % = 819.2 ~ 819 counts.
 Off time = 4CCh (decimal 410 + 819 -1 = 1228)
 
 LED0_OFF_H = 4h; LED0_OFF_L = CCh
-
-<!-- image -->
 
 Example 2: (assumes that the LED4 output is used and
 
@@ -620,17 +590,11 @@ Off time = 4CBh (decimal 3685 + 3686 = 7372 -4096 = 3275)
 
 LED4_OFF_H = 4h; LED4_OFF_L = CBh
 
-<!-- image -->
-
 PCA9685_2
 
 © NXP B.V. 2009. All rights reserved.
 
-<!-- image -->
-
 ## PCA9685
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 Example 1: LEDn_ON &lt; LEDn_OFF
 
@@ -640,35 +604,13 @@ Example 3: LEDn_ON[12] = 1; LEDn_ON[11:0] = 1022; LEDn_OFF[12] = 0; LEDn_OFF[11:
 
 Example 4: LEDn_ON[12] = 0; LEDn_OFF[12] = 0; LEDn_ON[11:0] = LEDn_OFF[11:0]
 
-<!-- image -->
-
-PCA9685_2
-
-<!-- image -->
-
-## PCA9685
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
 PCA9685_2
 
 xxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxx x x x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxx xx xx xxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxx xxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxx x x
 
 xxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxx xxx
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
 PCA9685_2
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 Table 6. LED_ON, LED_OFF control registers (address 06h to 45h) bit description
 
@@ -789,10 +731,6 @@ PCA9685_2
 
 © NXP B.V. 2009. All rights reserved.
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 Table 6. LED_ON, LED_OFF control registers (address 06h to 45h) bit description …continued Legend: \* default value.
 
 | Address | Register        | Bit | Symbol               | Access | Value       | Description                      |
@@ -825,10 +763,6 @@ The LEDn_OFF_H output control bit 4, when set to logic 1, causes the output to b
 Remark: When all LED outputs are configured as 'always OFF', the prescale counter and all associated PWM cycle timing logic are disabled. If LEDn_ON_H[4] and LEDn_OFF_H[4] are set at the same time, the LEDn_OFF_H[4] function takes precedence.
 
 PCA9685_2
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 ## 7.3.4 ALL_LED_ON and ALL_LED_OFF control
 
@@ -865,10 +799,6 @@ where the update rate is the output modulation frequency required. For example, 
 The PRE_SCALE register can only be set when the SLEEP bit of MODE1 register is set to logic 1.
 
 PCA9685_2
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 ## 7.3.6 SUBADR1 to SUBADR3, I 2 C-bus subaddress 1 to 3
 
@@ -914,10 +844,6 @@ If ALLCALL bit = 0, the device does not acknowledge the address programmed in re
 
 PCA9685_2
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 ## 7.4 Active LOW output enable input
 
 The active LOW output enable ( OE) pin, allows to enable or disable all the LED outputs at the same time.
@@ -961,17 +887,7 @@ If more than 1 byte of data is sent, the PCA9685 does not acknowledge any more.
 
 1. Once the correct byte (SWRST data byte 1) has been sent and correctly acknowledged, the master sends a STOP command to end the SWRST Call: the PCA9685 then resets to the default value (power-up value) and is ready to be addressed again within the specified bus free time (t BUF ).
 
-<!-- image -->
-
 The I 2 C-bus master must interpret a non-acknowledge from the PCA9685 (at any time) as a 'SWRST Call Abort'. The PCA9685 does not initiate a reset of its registers. This happens only when the format of the SWRST Call sequence is not correct.
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 ## 7.7 Using the PCA9685 with and without external drivers
 
@@ -1000,8 +916,6 @@ Table 11. Use of INVRT and OUTDRV based on connection to the LEDn outputs when O
 
 [4] Optimum configuration when external P-type (PNP , PMOS) driver used.
 
-<!-- image -->
-
 PCA9685_2
 
 ## 8. Characteristics of the I 2 C-bus
@@ -1012,27 +926,15 @@ The I 2 C-bus is for 2-way, 2-line communication between different ICs or module
 
 One data bit is transferred during each clock pulse. The data on the SDA line must remain stable during the HIGH period of the clock pulse as changes in the data line at this tim will be interpreted as control signals (see Figure16).
 
-<!-- image -->
-
 ## 8.1.1 START and STOP conditions
 
 Both data and clock lines remain HIGH when the bus is not busy. A HIGH-to-LOW transition of the data line while the clock is HIGH is defined as the START condition (S). A LOW-to-HIGH transition of the data line while the clock is HIGH is defined as the STOP condition (P) (see Figure17).
-
-<!-- image -->
 
 ## 8.2 System configuration
 
 A device generating a message is a 'transmitter'; a device receiving is the 'receiver'. T device that controls the message is the 'master' and the devices which are controlled by the master are the 'slaves' (see Figure18).
 
 PCA9685_2
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
 
 ## 8.3 Acknowledge
 
@@ -1042,50 +944,16 @@ A slave receiver which is addressed must generate an acknowledge after the recep
 
 A master receiver must signal an end of data to the transmitter by not generating an acknowledge on the last byte that has been clocked out of the slave. In this event, the transmitter must leave the data line HIGH to enable the master to generate a STOP condition.
 
-<!-- image -->
-
 ## 9. Bus transactions
 
-<!-- image -->
-
-<!-- image -->
-
 PCA9685_2
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-<!-- image -->
-
-<!-- image -->
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
 
 - (1) In this example, several PCA9685s are used and the same sequences (A) and (B) above are sent to each of them.
 - (2) Acknowledge from all the slave devices configured for the new LED All Call I 2 C-bus address in sequence (B).
 
 Fig 25. LED All Call I 2 C-bus address programming and LED All Call sequence example
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 ## 10. Application design-in information
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 Question 1: What kind of edge rate control is there on the outputs?
 
@@ -1109,13 +977,7 @@ Question 5: I'm using LEDs with integrated Zener diodes and the IC is getting ve
 
 PCA9685_2
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 Fig 27. LCD backlighting application
-
-<!-- image -->
 
 ## 11. Limiting values
 
@@ -1165,15 +1027,7 @@ V DD = 2.3 V to 5.5 V; V SS = 0 V; Tamb = 40 C to +85 C; unless otherwise specif
 
 PCA9685_2
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 Table 13. Static characteristics …continued V DD -GLYPH&lt;176&gt; GLYPH&lt;176&gt;
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 = 2.3 V to 5.5 V; V SS = 0 V; Tamb = 40 C to +85 C; unless otherwise specified.
 
@@ -1189,19 +1043,13 @@ Table 13. Static characteristics …continued V DD -GLYPH&lt;176&gt; GLYPH&lt;17
 
 [2] Each bit must be limited to a maximum of 25 mA and the total package limited to 400 mA due to internal busing limits.
 
-<!-- image -->
-
 Fig 28. I DD typical values with OSC on and f SCL = 1 MHz versus temperature
-
-<!-- image -->
 
 100
 
 Fig 29. I OL typical drive (LEDn outputs) versus temperature
 
 Fig 30. Standby supply current versus temperature
-
-<!-- image -->
 
 xxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx x xxxxxxxxxxxxxx xxxxxxxxxx xxx xxxxxx xxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxx xxxxx xxxxxx xx xxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxx xxxxxxx xxxxxxxxxxxxxxxxxxx
 
@@ -1220,8 +1068,6 @@ xxxxxxxxxxxxxxxx xxxxxxxxxxxxxx xxxxxx xx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxx
 | Dynamic characteristics Parameter Conditions |        | SCL clock frequency | frequency on pin EXTCLK | bus free time between a STOP and START condition | hold time (repeated) START condition | set-up time for a repeated START condition | set-up time for STOP condition | data hold time | data valid acknowledge time | data valid time data set-up time | LOW period of the SCL clock | HIGH period of the SCL clock | fall time of both SDA and SCL signals | rise time of both SDA and SCL signals | pulse width of spikes that must be suppressed by the input filter | LOW to OFF-state propagation delay OE to LEDn; OUTNE[1:0] = 10 or in MODE2 register | OFF-state to LOW propagation delay OE to LEDn; OUTNE[1:0] = 10 or in MODE2 register | HIGH to OFF-state propagation delay OE to LEDn; OUTNE[1:0] = 10 or in MODE2 register |
 | Table 14.                                    |        | f SCL               | f EXTCLK                | t BUF                                            | t HD;STA                             | t SU;STA                                   | t SU;STO                       |                | t VD;ACK                    | t VD;DAT                         | SU;DAT t LOW                | t                            | t f                                   | t r                                   | t SP                                                              | t PLZ                                                                               | t PZL                                                                               | NXP B.V. t PHZ                                                                       |
 | PCA9685_2                                    | Symbol |                     |                         |                                                  |                                      |                                            |                                | t HD;DAT       |                             | t                                |                             | HIGH                         |                                       |                                       |                                                                   |                                                                                     |                                                                                     | 2009.                                                                                |
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 © NXP B.V. 2009. All rights reserved.
 
@@ -1264,8 +1110,6 @@ A master device must internally provide a hold time of at least 300 ns for the S
 
 edge.
 
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 [5] The maximum tf for the SDA and SCL bus lines is specified at 300 ns. The maximum fall time (t f ) for the SDA output stage is specified at 250 ns. This allows series protection resistors to be connected between the SDA and the SCL pins and the SDA/SCL bus lines without exceeding the maximum specified t f .
 
 C b = total capacitance of one bus line in pF.
@@ -1276,25 +1120,9 @@ C b = total capacitance of one bus line in pF.
 
 PCA9685_2
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-<!-- image -->
-
-<!-- image -->
-
 ## 14. Test information
 
 PCA9685_2
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
 
 R L = Load resistor for LEDn.
 
@@ -1303,8 +1131,6 @@ C L = Load capacitance includes jig and probe capacitance.
 R T = Termination resistance should be equal to the output impedance Z o of the pulse generators.
 
 Fig 34. Test circuitry for switching times
-
-<!-- image -->
 
 R L = Load resistor for LEDn.
 
@@ -1336,17 +1162,7 @@ Table 15. Test data for enable/disable switching times
 | OUTLINE VERSION | IEC        | JEDEC      | JEITA      |                     |                   |
 | SOT361-1        |            | MO-153     |            |                     | 99-12-27 03-02-19 |
 
-<!-- image -->
-
 Fig 36. Package outline SOT361-1 (TSSOP28)
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 ## HVQFN28: plastic thermal enhanced very thin quad flat package; no leads; 28 terminals; body 6 x 6 x 0.85 mm
 
@@ -1358,8 +1174,6 @@ SOT788-1
 | SOT788-1        | - -        | MO-220     | -          |                     | 02-10-22   |
 
 Fig 37. Package outline SOT788-1 (HVQFN28)
-
-<!-- image -->
 
 ## 16. Handling information
 
@@ -1397,12 +1211,6 @@ Key characteristics in both wave and reflow soldering are:
 
 Key characteristics in wave soldering are:
 
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 - Process issues, such as application of adhesive and flux, clinching of leads, board transport, the solder wave parameters, and the time during which components are exposed to the wave
 - Solder bath specifications, including temperature and impurities
 
@@ -1436,12 +1244,6 @@ Moisture sensitivity precautions, as indicated on the packing, must be respected
 Studies have shown that small packages reach higher temperatures during reflow soldering, see Figure38.
 
 PCA9685_2
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
-<!-- image -->
 
 For further information on temperature profiles, refer to Application Note AN10365 'Surface mount reflow soldering description' .
 
@@ -1479,10 +1281,6 @@ Table 18. Abbreviations
 | PCA9685_2      | 20090716                                                                                                                                                                       | Product data sheet                                                                                                                                                             | -                                                                                                                                                                              | PCA9685_1                                                                                                                                                                      |
 | Modifications: | • Table 1 'Order ing inf ormation' : - added type number PCA9685PW/Q900 - added Table note [1] • Figure 2 'Pin confi guration f or TSSOP28' : added type number PCA9685PW/Q900 | • Table 1 'Order ing inf ormation' : - added type number PCA9685PW/Q900 - added Table note [1] • Figure 2 'Pin confi guration f or TSSOP28' : added type number PCA9685PW/Q900 | • Table 1 'Order ing inf ormation' : - added type number PCA9685PW/Q900 - added Table note [1] • Figure 2 'Pin confi guration f or TSSOP28' : added type number PCA9685PW/Q900 | • Table 1 'Order ing inf ormation' : - added type number PCA9685PW/Q900 - added Table note [1] • Figure 2 'Pin confi guration f or TSSOP28' : added type number PCA9685PW/Q900 |
 | PCA9685_1      | 20080724                                                                                                                                                                       | Product data sheet                                                                                                                                                             | -                                                                                                                                                                              | -                                                                                                                                                                              |
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 ## 20. Legal information
 
@@ -1538,17 +1336,9 @@ For more information, please visit: <http://www.nxp.com>
 
 For sales office addresses, please send an email to: <salesaddresses@nxp.com>
 
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
-
 ## 22. Contents
 
 General description . . . . . . . . . . . . . . . . . . . . . . 1
-
-<!-- image -->
-
-## 16-channel, 12-bit PWM Fm+ I 2 C-bus LED controller
 
 17.1
 
@@ -1730,10 +1520,6 @@ Document identifier: PCA9685_2
 | 14      | Test information. . . . . . . . . . . .                                   | . . |
 | 16      | Handling information. . . . . . . . . .                                   | . . |
 | 17      | Soldering of SMD packages . . . . . . .                                   | . . |
-
-<!-- image -->
-
-<!-- image -->
 
 ## This datasheet has been downloaded from
 
