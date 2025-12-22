@@ -104,3 +104,7 @@ _All public methods (`set_angle`, `set_speed`, `read_ultrasonic`, etc.) will be 
 
 - **v3.1 (2025‑12‑XX)** – Centralised all pin, bus, and address definitions in `src/hardware/config.yaml`; updated documentation to reference the YAML file.
 - **v3.0 (2024‑08‑15)** – Updated motor‑driver interfacing notes.
+
+## General Notes
+
+2025-12-21 - After fighting with it for a while I did eventually figure out that A: I needed a different library to deal with the WS2812 on Raspberry Pi 5, and B: The normal instructions have you hook up a series of LED strips daisy-chained into a terminal on the board, there are 2 LEDs before this board (onboard) which are controllable and then the 12 LEDs in the kit strips. This means that the channel has 14 LEDs from the kit. Have not tested the other channels to see if they are on different device registers, however the built in SPI LEDs are Bus 0 Dev 0.
