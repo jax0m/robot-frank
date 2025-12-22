@@ -26,34 +26,11 @@ gpio:
   sda: 2 # BCM2 – I²C data
   scl: 3 # BCM3 – I²C clock
 
-  # ---- PWM / Servo pins -----------------------------------------
-  # Logical names → (BCM pin, PCA9685 channel, default duty)
-  servo_0:
-    pin: 12 # BCM12 – PWM channel 0 (Servo 0)
-    channel: 0
-    init_duty: 128
-  servo_1:
-    pin: 13 # BCM13 – PWM channel 1 (Servo 1)
-    channel: 1
-    init_duty: 128
-  servo_2:
-    pin: 19 # BCM19 – PWM channel 2 (Servo 2)
-    channel: 2
-    init_duty: 128
-  servo_3:
-    pin: 18 # BCM18 – PWM channel 3 (Servo 3)
-    channel: 3
-    init_duty: 128
-  servo_4: # 5th servo (new)
-    pin: 10 # BCM10 – PWM channel 4 (5th servo)
-    channel: 4
-    init_duty: 128
-
   # ---- Sensor / Misc pins ----------------------------------------
   ultrasonic_trigger: 5 # Trigger output for ultrasonic module
   ultrasonic_echo: 6 # Echo input for ultrasonic module
   ir_rx: 5 # IR receiver data pin
-  ws2812_data: 18 # WS2812 data line (shares PWM channel 3)
+  # ws2812_data: 18 # WS2812 data line (shares PWM channel 3)
 
   # ---- Line‑tracking sensors ----------------------------------------
   line_left: 22 # Left‑side IR line‑tracker sensor
@@ -73,8 +50,6 @@ gpio:
     sclk: 21 # GPIO21
     ce0: 18 # GPIO18
     ce1: 17 # GPIO17
-  # (Add spi2‑spi6 entries if you need them – copy the same structure from
-  # robotLight.py’s comment block.)
 
   # ---- LED / status indicators ---------------------------------------
   led_power: 4 # BCM4 – “Power” LED (X5)
@@ -95,25 +70,26 @@ gpio:
 # 3️⃣ PWM / Servo configuration (expanded)
 # -----------------------------------------------------------------
 pwm:
-  # Logical name → (BCM pin, PCA9685 channel, default duty)
+  # ---- PWM / Servo pins -----------------------------------------
+  # Logical names → (BCM pin, PCA9685 channel, default duty)
   servo_0:
-    pin: 12
+    pin: 12 # BCM12 – PWM channel 0 (Servo 0)
     channel: 0
     init_duty: 128
   servo_1:
-    pin: 13
+    pin: 13 # BCM13 – PWM channel 1 (Servo 1)
     channel: 1
     init_duty: 128
   servo_2:
-    pin: 19
+    pin: 19 # BCM19 – PWM channel 2 (Servo 2)
     channel: 2
     init_duty: 128
   servo_3:
-    pin: 18
+    pin: 18 # BCM18 – PWM channel 3 (Servo 3)
     channel: 3
     init_duty: 128
-  servo_4: # 5th servo (new)
-    pin: 10
+  servo_4:
+    pin: 10 # BCM10 – PWM channel 4 (5th servo)
     channel: 4
     init_duty: 128
 
@@ -160,17 +136,6 @@ spi_mappings:
   4: { mosi: 6, miso: 5, sclk: 7, ce0: 4, ce1: 25 }
   5: { mosi: 14, miso: 13, sclk: 15, ce0: 12, ce1: 26 }
   6: { mosi: 20, miso: 19, sclk: 21, ce0: 18, ce1: 27 }
-
-# ---------------------------------------------------------------------------
-# LED strip configuration – split into logical groups
-# ---------------------------------------------------------------------------
-leds:
-  body:
-    name: body
-    count: 14 # number of LEDs on the external strip
-    bus: 0 # spi bus
-    device: 1 # device index on that bus
-    brightness: 1.0 # 0.0 - 1.0
 
 # -----------------------------------------------------------------
 # 6️⃣ Register map for each I²C device (helpful for generated code)

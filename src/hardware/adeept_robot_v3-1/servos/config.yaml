@@ -1,0 +1,51 @@
+# -----------------------------------------------------------------
+# 1️⃣ I²C / bus configuration
+# -----------------------------------------------------------------
+i2c:
+  # Linux I²C bus number that the PCA9685 is connected to.
+  # Change this value if your wiring uses a different bus (e.g. 1 for /dev/i2c-1).
+  bus_number: 4
+
+  # 7‑bit I²C address of the PCA9685 driver.
+  # The default address used by the driver is 0x40; override here if your device
+  # is wired to a different address.
+  device_address:
+    pwm_driver: 0x5F
+
+# -----------------------------------------------------------------
+# 2️⃣ PWM / Servo configuration (expanded)
+# -----------------------------------------------------------------
+pwm:
+  # Desired PWM frequency for all channels (Hz).  The driver will compute the
+  # appropriate prescale value from this value.
+  default_freq: 50
+
+  # Logical mapping of each servo.  The keys (e.g. base_joint) are just
+  # convenient names; the values contain the hardware‑specific details.
+  servos:
+    base:
+      channel: 0
+      min_pulse: 150 # microseconds – corresponds to the minimum angle
+      max_pulse: 600 # microseconds – corresponds to the maximum angle
+      default_angle: 90
+    elbow:
+      channel: 1
+      min_pulse: 150
+      max_pulse: 600
+      default_angle: 45
+    wrist:
+      channel: 2
+      min_pulse: 150
+      max_pulse: 600
+      default_angle: 135
+    grip:
+      channel: 3
+      min_pulse: 150
+      max_pulse: 600
+      default_angle: 90
+    elbow_right:
+      channel: 4
+      min_pulse: 150
+      max_pulse: 600
+      default_angle: 90
+    # Add more servos here as needed, following the same structure.

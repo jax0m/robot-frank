@@ -178,7 +178,7 @@ class LedDriver:
 # ---------------------------------------------------------------------------
 # Configuration handling (kept for backward‑compatibility)
 # ---------------------------------------------------------------------------
-CONFIG_PATH = Path(__file__).resolve().parents[1] / "config.yaml"
+CONFIG_PATH = Path(__file__).resolve().parents[0] / "config.yaml"
 
 
 def load_config() -> dict:

@@ -1,0 +1,10 @@
+# ---------------------------------------------------------------------------
+# LED strip configuration – split into logical groups
+# ---------------------------------------------------------------------------
+leds:
+  body:
+    name: body
+    count: 14 # number of LEDs on the external strip
+    bus: 0 # spi bus
+    device: 1 # device index on that bus
+    brightness: 1.0 # 0.0 - 1.0
