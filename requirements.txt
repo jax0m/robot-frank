@@ -14,3 +14,9 @@ opencv-python
 imutils
 picamera2
 spidev
+adafruit-circuitpython-motor
+adafruit-circuitpython-pca9685
+adafruit-circuitpython-ads7830
+Adafruit-Blinka
+adafruit-circuitpython-register
+adafruit-circuitpython-busdevice
