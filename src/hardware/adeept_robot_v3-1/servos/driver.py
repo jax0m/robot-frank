@@ -31,18 +31,13 @@ from typing import Dict, List, Any
 # register helpers without re‑implementing them.
 # ---------------------------------------------------------------------------
 
-from adafruit_pca9685 import PCA9685  # type: ignore[import-untyped]
+from adafruit_pca9685 import PCA9685
 from smbus2 import (
     SMBus,
 )  # Imported locally to keep import statements at the top level tidy.
 import board
 
 import busio
-
-try:
-    busio.I2C.try_lock()
-except Exception:
-    print("bananas")
 
 
 # ---------------------------------------------------------------------------
@@ -143,12 +138,18 @@ class ServoDriver:
         # Open the I²C bus exactly once.
         self._bus = self._open_bus()
 
+        try:
+            busio.I2C.try_lock(self._bus)
+
+        except Exception as e:
+            print("Unable to lock with exception caught as:", e)
         # Create the low‑level PCA9685 object – it takes an already‑opened
         # ``SMBus`` instance and the 7‑bit address.
         self._pca = PCA9685(self._bus, address=self.address)
 
         # Apply the default PWM frequency.
         self._pca.set_pwm_freq(self.freq)
+        self._pca.i2c_device.write()
 
         # Populate per‑servo lookup tables from the ``servos`` section.
         self._servo_defs: Dict[str, Dict[str, Any]] = cfg["servos"]

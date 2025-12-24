@@ -4,7 +4,7 @@
 i2c:
   # Linux I²C bus number that the PCA9685 is connected to.
   # Change this value if your wiring uses a different bus (e.g. 1 for /dev/i2c-1).
-  bus_number: 4
+  bus_number: 1
 
   # 7‑bit I²C address of the PCA9685 driver.
   # The default address used by the driver is 0x40; override here if your device
@@ -28,6 +28,18 @@ pwm:
       min_pulse: 150 # microseconds – corresponds to the minimum angle
       max_pulse: 600 # microseconds – corresponds to the maximum angle
       default_angle: 90
+      low_speed:
+        frequency: 24
+        low_angle: 90
+        low_command: 1900
+        high_angle: 135
+        high_command: 3400
+      high_speed:
+        frequency: 100
+        low_angle: 90
+        low_command: 7600
+        high_angle: 135
+        high_command: 14250
     elbow:
       channel: 1
       min_pulse: 150
@@ -37,7 +49,19 @@ pwm:
       channel: 2
       min_pulse: 150
       max_pulse: 600
-      default_angle: 135
+      default_angle: 90
+      low_speed:
+        frequency: 24
+        low_angle: 0
+        low_command: 800
+        high_angle: 180
+        high_command: 3970
+      high_speed:
+        frequency: 100
+        low_angle: 0
+        low_command: 3400
+        high_angle: 180
+        high_command: 16200
     grip:
       channel: 3
       min_pulse: 150
