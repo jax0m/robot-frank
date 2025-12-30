@@ -13,9 +13,9 @@ from adafruit_pca9685 import PCA9685
 
 
 def iterate_in_chunks(
-    start: int = 7600,  # 1000@30, 3400@100
-    chunk_size: int = 2000,
-    limit: int = 14250,  # 5200@30, 16200@100
+    start: int = 1800,  # 1700@24
+    chunk_size: int = 50,
+    limit: int = 2400,  # 5200@30, 16200@100
 ) -> Iterator[Tuple[int, int, int]]:
     """
     Iterate from ``start`` to ``limit`` (default 65535) in successive
@@ -68,14 +68,14 @@ i2c = board.I2C()  # uses board.SCL and board.SDA
 pca = PCA9685(i2c, address=0x5F)
 
 # Set the PWM frequency to 60hz.
-pca.frequency = 100
+pca.frequency = 24
 
 
 # Example: start at 1000 and handle each 500‑item block up to 65535
 for first, last, cnt in iterate_in_chunks():
     # Place whatever work you need here (e.g., call another function)
     print(f"Chunk {first}‑{last} ({cnt} items)")
-    pca.channels[0].duty_cycle = first
+    pca.channels[4].duty_cycle = first
     time.sleep(1)
 # Set the PWM duty cycle for channel zero to 50%. duty_cycle is 16 bits to match other PWM objects
 # but the PCA9685 will only actually give 12 bits of resolution.
