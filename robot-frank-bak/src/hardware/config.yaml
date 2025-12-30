@@ -1,0 +1,152 @@
+# src/hardware/config.yaml
+# -------------------------------------------------
+# Central configuration for the Adeept Robot HAT V3.1
+# All Python modules and documentation should import this file
+# to obtain bus numbers, GPIO pins, I²C addresses, SPI mappings,
+# PWM / servo settings, motor‑driver pins, LED‑strip parameters,
+# and any other hardware constants.
+# -------------------------------------------------
+
+# -----------------------------------------------------------------
+# 1️⃣ I²C / bus configuration
+# -----------------------------------------------------------------
+i2c:
+  bus_number: 0 # Linux bus number (/dev/i2c-0). Change if you wire to a different bus.
+  device_address:
+    pwm_driver: 0x5F # Default address of the PCA9685 16‑channel PWM driver
+    # Add additional device addresses here, e.g.:
+    # mpu6050: 0x68
+    # bmp280: 0x76
+
+# -----------------------------------------------------------------
+# 2️⃣ GPIO pin mapping (BCM numbers)
+# -----------------------------------------------------------------
+gpio:
+  # ---- I²C bus pins -------------------------------------------------
+  sda: 2 # BCM2 – I²C data
+  scl: 3 # BCM3 – I²C clock
+
+  # ---- Sensor / Misc pins ----------------------------------------
+  ultrasonic_trigger: 5 # Trigger output for ultrasonic module
+  ultrasonic_echo: 6 # Echo input for ultrasonic module
+  ir_rx: 5 # IR receiver data pin
+  # ws2812_data: 18 # WS2812 data line (shares PWM channel 3)
+
+  # ---- Line‑tracking sensors ----------------------------------------
+  line_left: 22 # Left‑side IR line‑tracker sensor
+  line_middle: 27 # Middle IR line‑tracker sensor
+  line_right: 17 # Right‑side IR line‑tracker sensor
+
+  # ---- SPI → GPIO mappings (copied from robotLight.py comment block) --
+  spi0:
+    mosi: 10 # GPIO10  (WS2812‑PIN for SPI0)
+    miso: 9 # GPIO9
+    sclk: 11 # GPIO11
+    ce0: 8 # GPIO8   (chip‑select 0)
+    ce1: 7 # GPIO7   (chip‑select 1)
+  spi1:
+    mosi: 20 # GPIO20  (WS2812‑PIN for SPI1)
+    miso: 19 # GPIO19
+    sclk: 21 # GPIO21
+    ce0: 18 # GPIO18
+    ce1: 17 # GPIO17
+
+  # ---- LED / status indicators ---------------------------------------
+  led_power: 4 # BCM4 – “Power” LED (X5)
+  led_battery_low_1: 21 # BCM21 – first battery‑level LED (red)
+  led_battery_low_2: 20 # BCM20 – second battery‑level LED (green, optional)
+  led_buzzer: 24 # BCM24 – optional buzzer control (PWM)
+
+  # ---- UART (debug console) – optional -------------------------
+  uart_rx: 15 # BCM15 – UART RX
+  uart_tx: 14 # BCM14 – UART TX
+
+  # ---- Battery‑level monitor (optional) ---------------------------
+  battery_monitor:
+    low_battery_led: 21 # BCM21 – lights when voltage falls below threshold
+    low_voltage_threshold: 7.2 # volts – adjust to match your battery pack
+
+# -----------------------------------------------------------------
+# 3️⃣ PWM / Servo configuration (expanded)
+# -----------------------------------------------------------------
+pwm:
+  # ---- PWM / Servo pins -----------------------------------------
+  # Logical names → (BCM pin, PCA9685 channel, default duty)
+  servo_0:
+    pin: 12 # BCM12 – PWM channel 0 (Servo 0)
+    channel: 0
+    init_duty: 128
+  servo_1:
+    pin: 13 # BCM13 – PWM channel 1 (Servo 1)
+    channel: 1
+    init_duty: 128
+  servo_2:
+    pin: 19 # BCM19 – PWM channel 2 (Servo 2)
+    channel: 2
+    init_duty: 128
+  servo_3:
+    pin: 18 # BCM18 – PWM channel 3 (Servo 3)
+    channel: 3
+    init_duty: 128
+  servo_4:
+    pin: 10 # BCM10 – PWM channel 4 (5th servo)
+    channel: 4
+    init_duty: 128
+
+  # ----- Motor driver pins (two tank‑tread motors) -----------------------
+  motor_left:
+    pwm_pin: 23 # PWM output that drives left‑motor speed controller
+    dir_forward_pin: 24 # GPIO that sets forward direction (high = forward)
+    dir_reverse_pin: 25 # GPIO that sets reverse direction (high = reverse)
+    enable_pin: 26 # Optional enable pin (active‑high)
+  motor_right:
+    pwm_pin: 27 # PWM output for right motor
+    dir_forward_pin: 28
+    dir_reverse_pin: 29
+    enable_pin: 30
+
+  # ----- Battery‑level monitor (optional) ----------------------------
+  battery_monitor:
+    low_battery_led: 21 # BCM21 – lights when voltage falls below threshold
+    low_voltage_threshold: 7.2 # volts – adjust to match your battery pack
+
+# -----------------------------------------------------------------
+# 4️⃣ Back‑compatibility aliases for the old `init_pwmX` constants
+# -----------------------------------------------------------------
+init_pwm:
+  0: 128 # maps to servo_0 / channel 0
+  1: 128 # maps to servo_1 / channel 1
+  1_alt: 128 # (optional alias – keep if any script still uses it)
+  2: 128 # maps to servo_2 / channel 2
+  3: 128 # maps to servo_3 / channel 3
+  3_alt: 128 # (optional alias)
+  4: 128 # maps to servo_4 / channel 4
+  5: 128 # maps to servo_5 / channel 5 (new 5th servo)
+  6: 128 # placeholder for future channel 6
+  7: 128 # placeholder for future channel 7
+
+# -----------------------------------------------------------------
+# 5️⃣ Full SPI → GPIO mapping (useful for docs / scripts)
+# -----------------------------------------------------------------
+spi_mappings:
+  0: { mosi: 10, miso: 9, sclk: 11, ce0: 8, ce1: 7 }
+  1: { mosi: 20, miso: 19, sclk: 21, ce0: 18, ce1: 17 }
+  2: { mosi: 41, miso: 40, sclk: 42, ce0: 43, ce1: 44 }
+  3: { mosi: 2, miso: 1, sclk: 3, ce0: 0, ce1: 24 }
+  4: { mosi: 6, miso: 5, sclk: 7, ce0: 4, ce1: 25 }
+  5: { mosi: 14, miso: 13, sclk: 15, ce0: 12, ce1: 26 }
+  6: { mosi: 20, miso: 19, sclk: 21, ce0: 18, ce1: 27 }
+
+# -----------------------------------------------------------------
+# 6️⃣ Register map for each I²C device (helpful for generated code)
+# -----------------------------------------------------------------
+registers:
+  mpu6050:
+    WHO_AM_I: 0x75
+    PWR_MGMT_1: 0x6B
+    ACCEL_XOUT_H: 0x3B
+    # …add other registers as required
+  # bmp280:
+  #   CHIP_ID:          0x58
+  #   SOFT_RESET:       0xE0
+  #   …etc…
