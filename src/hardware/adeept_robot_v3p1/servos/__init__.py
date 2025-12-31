@@ -9,11 +9,7 @@ convenience ``move`` function so that user code can simply write::
     move("base_joint", 90)   # set the "base_joint" servo to 90°
 """
 
-from .driver import ServoDriver, create_servo_driver
-
-# Create a singleton driver that points at the bundled configuration.
-# Users can import the driver directly if they need finer‑grained control.
-_driver = create_servo_driver()
+from .driver import ServoDriver
 
 
 def move(name: str, angle: float) -> None:
@@ -27,13 +23,13 @@ def move(name: str, angle: float) -> None:
     angle : float
         Desired angle in degrees.
     """
-    _driver.set_angle(name, angle)
+    ServoDriver.set_angle("grip", 0)
 
 
-def get_driver() -> ServoDriver:
-    """
-    Return the underlying :class:`ServoDriver` instance.
-    This is useful if you need to call methods that are not wrapped by
-    the ``move`` helper (e.g. ``set_pulse_width``).
-    """
-    return _driver
+# def get_driver() -> ServoDriver:
+#     """
+#     Return the underlying :class:`ServoDriver` instance.
+#     This is useful if you need to call methods that are not wrapped by
+#     the ``move`` helper (e.g. ``set_pulse_width``).
+#     """
+#     return _driver
