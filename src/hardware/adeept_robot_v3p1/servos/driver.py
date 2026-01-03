@@ -160,28 +160,38 @@ class ServoDriver:
 
         # Parallel lists for pulse limits – order will be the same as the
         # enumeration order used for ``_servo_names`` later.
-        self._min_pulse: List[int] = []
-        self._max_pulse: List[int] = []
+        self._min_pulse: List[float] = []
+        self._max_pulse: List[float] = []
         self._default_angle: List[float] = []
         self._angle_limits: List[tuple] = []  # (min_angle, max_angle)
         self._servo_names: List[str] = []  # keep stable order
 
         for idx, (name, info) in enumerate(self._servo_defs.items()):
             self._servo_names.append(name)
-            self._min_pulse.append(info["min_pulse"])
-            self._max_pulse.append(info["max_pulse"])
-            self._default_angle.append(info["default_angle"])
+            self._min_pulse.append(info.get("min_pulse"))
+            self._max_pulse.append(info.get("max_pulse"))
+            self._default_angle.append(info.get("default_angle"))
             self._angle_limits.append(
                 (info.get("min_angle", 0), info.get("max_angle", 180))
             )
-            # Store the numeric index for each servo name – used later in set_angle().
-            # (The attribute is created dynamically, so we add a type‑hint for Pylance.)
-            self._servo_index = {
-                name: idx for idx, name in enumerate(self._servo_names)
-            }  # type: ignore[attr-defined]
 
-        # Reverse map channel → servo name for error‑checking helpers.
-        self._channel_to_name: Dict[int, str] = {
+        # Validate that every servo has the mandatory keys.
+        for name, info in self._servo_defs.items():
+            missing = [
+                k
+                for k in ("channel", "min_pulse", "max_pulse", "default_angle")
+                if k not in info
+            ]
+            if missing:
+                raise KeyError(
+                    f"Servo '{name}' is missing required keys: {', '.join(missing)}"
+                )
+
+        # Stable mapping servo_name → numeric index (0‑based)
+        self._servo_index = {name: idx for idx, name in enumerate(self._servo_names)}  # type: ignore[attr-defined]
+
+        # Mapping channel → servo name for error‑checking helpers.
+        self._channel_to_name = {
             ch: name
             for name, info in self._servo_defs.items()
             if (ch := info.get("channel"))
@@ -208,17 +218,16 @@ class ServoDriver:
         """
         Convert a *desired angle* (in degrees) to a pulse width (µs) using the
         per‑servo pulse limits and angle limits.
-
-        The conversion follows a linear mapping between the configured
-        ``min_angle`` / ``max_angle`` and the corresponding ``min_pulse`` /
-        ``max_pulse`` values.
         """
         min_angle, max_angle = self._angle_limits[idx]
+
         # Clamp the requested angle to the servo's allowed range.
         angle = max(min_angle, min(max_angle, angle))
 
+        # ----> Use the *idx*‑th entries of the stored lists <----
         min_us = self._min_pulse[idx]
         max_us = self._max_pulse[idx]
+
         # Linear interpolation between the two pulse limits.
         return min_us + (angle - min_angle) / (max_angle - min_angle) * (
             max_us - min_us
@@ -251,6 +260,25 @@ class ServoDriver:
 
         channel = self._channel_map[servo_name]
         # Use the upstream PCA9685 API – write the 12‑bit duty cycle directly.
+        duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
+        self._pca.channels[channel].duty_cycle = duty  # type: ignore[attr-defined]
+
+    def set_pulse(self, servo_name: str, pulse: int) -> None:
+        """
+        Move the specified servo (identified by its logical name in
+        ``config.yaml``) to *pulse* microseconds.
+        """
+        if servo_name not in self._servo_defs:
+            raise ValueError(f"Unknown servo name: {servo_name!r}")
+
+        idx = self._servo_index[servo_name]  # numeric index of the servo
+        min_pulse = self._min_pulse[idx]
+        max_pulse = self._max_pulse[idx]
+
+        # Clamp to the servo's allowed pulse range.
+        pulse_us = int(max(min_pulse, min(max_pulse, pulse)))
+
+        channel = self._channel_map[servo_name]
         duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
         self._pca.channels[channel].duty_cycle = duty  # type: ignore[attr-defined]
 
@@ -294,7 +322,8 @@ class ServoDriver:
         resources.  After calling this method the driver instance must not
         be used any further.
         """
-        self._bus.close()
+        # self._bus.close()
+        self._pca.deinit
 
     # -----------------------------------------------------------------------
     # Convenience methods for common patterns
@@ -304,8 +333,7 @@ class ServoDriver:
         Move every servo to its ``default_angle`` value defined in the
         configuration file.
         """
-        for name in self._servo_defs:
-            idx = self._servo_index[name]
+        for idx, name in enumerate(self._servo_defs):
             self.set_angle(name, self._default_angle[idx])
 
     def set_all_angles(self, angles: List[float]) -> None:
@@ -326,7 +354,7 @@ class ServoDriver:
     # def __exit__(self, exc_type, exc_val, exc_tb) -> None:
     #     self.close()
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self = self
+        self.close()
 
 
 # ---------------------------------------------------------------------------
@@ -358,7 +386,7 @@ def _cli() -> None:
     )
     parser.add_argument(
         "--pulse-us",
-        type=float,
+        type=int,
         default=None,
         help="Pulse width in microseconds. Mutually exclusive with --angle.",
     )
@@ -378,46 +406,29 @@ def _cli() -> None:
     cfg = _load_config()
     address = cfg["i2c"]["device_address"]["pwm_driver"]
     print("Loaded Address:", address)
-    freq = args.freq if args.freq is not None else cfg["pwm"]["default_freq"]
+    # freq = args.freq if args.freq is not None else cfg["pwm"]["default_freq"]
 
-    # Open bus and instantiate driver.
-    try:
-        bus_addr = cfg["i2c"]["bus_number"]
-        bus = SMBus(bus_addr)
-        print("Got bus:", bus_addr)
-        i2c = board.I2C()
-        pca = PCA9685(i2c, address=address)  # use address from config
-        if args.freq is not None:
-            pca.set_pwm_freq(args.freq)  # type: ignore[attr-defined]
+    with ServoDriver() as driver:
+        # Open bus and instantiate driver.
+        try:
+            bus_addr = cfg["i2c"]["bus_number"]
+            # bus = SMBus(bus_addr)
+            print("Got bus:", bus_addr)
 
-        # ---------------------------------------------------------------
-        # Pick the requested operation (angle or pulse width) and convert
-        # it to a 12‑bit duty cycle.  The conversion mirrors the logic
-        # used in ``set_angle`` – we reuse the driver’s own helper when
-        # an explicit angle is supplied.
-        # ---------------------------------------------------------------
-        if args.angle is not None:
-            # Compute pulse width using the servo’s min/max limits.
-            servo_info = cfg["pwm"]["servos"][args.servo]
-            # Find the same index that the driver uses (stable order).
-            idx = list(cfg["pwm"]["servos"].keys()).index(args.servo)
-            # Re‑use the driver’s conversion method – we need an instance,
-            # so create a temporary one just for the calculation.
-            dummy = ServoDriver()  # will read the same config
-            pulse_us = dummy._pulse_from_angle(args.angle, idx)
-        else:
-            pulse_us = args.pulse_us
-
-        duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
-        channel = servo_info["channel"]
-        pca.channels[channel].duty_cycle = duty  # type: ignore[attr-defined]
-
-        print(
-            f"Set {args.servo} to {pulse_us:.1f} µs"
-            + (" (angle)" if args.angle else " (pulse)")
-        )
-    finally:
-        bus.close()
+            # ---------------------------------------------------------------
+            # Pick the requested operation (angle or pulse width) and convert
+            # it to a 12‑bit duty cycle.  The conversion mirrors the logic
+            # used in ``set_angle`` – we reuse the driver’s own helper when
+            # an explicit angle is supplied.
+            # ---------------------------------------------------------------
+            if args.angle is not None:
+                driver.set_angle(args.servo, args.angle)
+                print(f"Set {args.servo} to {args.angle} deg")
+            else:
+                driver.set_pulse(args.servo, args.pulse_us)
+                print(f"Set {args.servo} to {args.pulse} us")
+        except Exception as e:
+            print(f"Could not set {args.servo} encountered exception:\n", e)
 
 
 if __name__ == "__main__":
