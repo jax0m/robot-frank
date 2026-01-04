@@ -23,13 +23,16 @@ def move(name: str, angle: float) -> None:
     angle : float
         Desired angle in degrees.
     """
-    ServoDriver.set_angle("grip", 0)
+    # ServoDriver.set_angle(servo_name, angle)
+    with ServoDriver() as drv:
+        drv.set_angle(servo_name=name, angle=angle)
 
 
-# def get_driver() -> ServoDriver:
-#     """
-#     Return the underlying :class:`ServoDriver` instance.
-#     This is useful if you need to call methods that are not wrapped by
-#     the ``move`` helper (e.g. ``set_pulse_width``).
-#     """
-#     return _driver
+def get_driver() -> ServoDriver:
+    """
+    Return the underlying :class:`ServoDriver` instance.
+    This is useful if you need to call methods that are not wrapped by
+    the ``move`` helper (e.g. ``set_pulse_width``).
+    """
+    with ServoDriver() as drv:
+        return drv

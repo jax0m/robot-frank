@@ -73,29 +73,29 @@ def _load_config() -> Dict[str, Any]:
     cfg_path = Path(__file__).resolve().parent / "config.yaml"
     if not cfg_path.is_file():
         raise FileNotFoundError(f"Configuration file not found: {cfg_path}")
-    print(f"Successfully found Configuration file:  {cfg_path}")
+    # print(f"Successfully found Configuration file:  {cfg_path}") # Diagnostic output
     try:
         with cfg_path.open("r", encoding="utf-8") as f:
             cfg = yaml.safe_load(f) or {}
-            print("Successfully loaded Configuration file")
+            # print("Successfully loaded Configuration file") # Diagnostic output
     except yaml.YAMLError as exc:
         raise ValueError(f"Failed to parse config.yaml: {exc}") from exc
 
     if "i2c" not in cfg or "bus_number" not in cfg["i2c"]:
         raise KeyError("config.yaml must contain 'i2c.bus_number'.")
-    else:
-        print("Found bus_number in i2c")
+    # else: # Diagnostic output
+    #     print("Found bus_number in i2c") # Diagnostic output
     if (
         "device_address" not in cfg["i2c"]
         or "pwm_driver" not in cfg["i2c"]["device_address"]
     ):
         raise KeyError("config.yaml must contain 'i2c.device_address.pwm_driver'.")
-    else:
-        print("Found 'i2c.device_address.pwm_driver'")
+    # else: # Diagnostic output
+    #     print("Found 'i2c.device_address.pwm_driver'") # Diagnostic output
     if "pwm" not in cfg or "default_freq" not in cfg["pwm"]:
         raise KeyError("config.yaml must contain 'pwm.default_freq'.")
-    else:
-        print("Found 'pwm.default_freq'")
+    # else: # Diagnostic output
+    #     print("Found 'pwm.default_freq'") # Diagnostic output
 
     # Every servo entry must provide at least the pulse limits and a channel.
     for name, info in cfg["pwm"]["servos"].items():
@@ -198,7 +198,7 @@ class ServoDriver:
                 )
 
         # Stable mapping servo_name → numeric index (0‑based)
-        self._servo_index = {name: idx for idx, name in enumerate(self._servo_names)}  # type: ignore[attr-defined]
+        self._servo_index = {name: idx for idx, name in enumerate(self._servo_names)}
 
         # Mapping channel → servo name for error‑checking helpers.
         self._channel_to_name = {
@@ -237,10 +237,10 @@ class ServoDriver:
         # ----> Use the *idx*‑th entries of the stored lists <----
         min_us = self._min_pulse[idx]
         max_us = self._max_pulse[idx]
-        print("Converting angle to pulse:\n")
-        print(
-            f"{int(min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us))}"
-        )
+        # print("Converting angle to pulse:\n") # Diagnostic output
+        # print(
+        #     f"{int(min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us))}"
+        # ) # Diagnostic output
         # Linear interpolation between the two pulse limits.
         return int(
             min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us)
@@ -272,8 +272,8 @@ class ServoDriver:
         pulse_us = self._pulse_from_angle(angle, idx)
 
         channel = self._channel_map[servo_name]
-        # Use the upstream PCA9685 API – write the 12‑bit duty cycle directly.
-        # duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
+        # Use the upstream PCA9685 API – write the 12‑bit duty cycle directly. #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
+        # duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
         self._pca.channels[channel].duty_cycle = pulse_us  # type: ignore[attr-defined]
 
     def set_pulse(self, servo_name: str, pulse: int) -> None:
@@ -283,23 +283,23 @@ class ServoDriver:
         """
         if servo_name not in self._servo_defs:
             raise ValueError(f"Unknown servo name: {servo_name!r}")
-        print(f"Attempting to set pulse for: {servo_name}")
+        # print(f"Attempting to set pulse for: {servo_name}") # Diagnostic output
         idx = self._servo_index[servo_name]  # numeric index of the servo
-        print(f"Index of servo as {idx} with min_pulse of:")
+        # print(f"Index of servo as {idx} with min_pulse of:") # Diagnostic output
         min_pulse = self._min_pulse[idx]
-        print(min_pulse, " and a max_pulse of")
+        # print(min_pulse, " and a max_pulse of") # Diagnostic output
         max_pulse = self._max_pulse[idx]
-        print(max_pulse, "\n")
-        print(
-            f"Pulse is attempting to be set to {pulse} clamping against min/max results in:"
-        )
+        # print(max_pulse, "\n") # Diagnostic output
+        # print(
+        #     f"Pulse is attempting to be set to {pulse} clamping against min/max results in:"
+        # ) # Diagnostic output
         # Clamp to the servo's allowed pulse range.
         pulse_us = int(max(min_pulse, min(max_pulse, pulse)))
-        print(pulse_us, "\n attempting to send value to driver")
+        # print(pulse_us, "\n attempting to send value to driver") # Diagnostic output
         channel = self._channel_map[servo_name]
-        print(f"servo channel found as {channel}")
-        duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
-        print(f"calculated duty cycle as: {duty}\n Sending")
+        # print(f"servo channel found as {channel}") # Diagnostic output
+        # duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
+        # print(f"calculated duty cycle as: {duty}\n Sending") #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
         self._pca.channels[channel].duty_cycle = pulse_us  # type: ignore[attr-defined]
 
     def set_angle_by_channel(self, channel: int, angle: float) -> None:
@@ -319,11 +319,11 @@ class ServoDriver:
         # Re‑use the same clamping / conversion logic as ``set_angle``.
         min_angle, max_angle = self._angle_limits[idx]
         angle = max(min_angle, min(max_angle, angle))
-        pulse_us = self._pulse_from_angle(angle, idx)
+        pulse_us = int(self._pulse_from_angle(angle, idx))
 
         # Use the same duty‑cycle write as in ``set_angle``.
-        duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
-        self._pca.channels[channel].duty_cycle = duty  # type: ignore[attr-defined]
+        # duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
+        self._pca.channels[channel].duty_cycle = pulse_us
 
     def get_channel(self, servo_name: str) -> int:
         """
@@ -371,10 +371,8 @@ class ServoDriver:
     def __enter__(self) -> "ServoDriver":
         return self
 
-    # def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-    #     self.close()
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        # self.close()
+        self.close()
         print("ending connection")
 
 

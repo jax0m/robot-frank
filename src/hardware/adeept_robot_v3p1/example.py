@@ -9,8 +9,8 @@ It showcases:
 
 import threading
 import time
-from .leds import LedDriver
-from .servos import move, get_driver
+from servos import move, get_driver
+from leds import LedDriver
 
 # ----------------------------------------------------------------------
 # LED control -----------------------------------------------------------
@@ -39,12 +39,21 @@ anim_thread.start()
 # ----------------------------------------------------------------------
 # Move a couple of servos to illustrate the API.
 # The names must match entries in `src/hardware/adeept_robot_v3-1/servos/config.yaml`.
-move("base_joint", 90)  # set the base joint to a 90° angle
-move("shoulder_left", 45)  # raise the left shoulder
-
 # If you need more direct access to the underlying driver you can do:
 driver = get_driver()  # returns the singleton ServoDriver instance
-# driver.set_angle("elbow_right", 120)   # example of a raw call
+driver.home_all()
+time.sleep(5)
+move("elbow", -90)  # set the base joint to a 90° angle
+time.sleep(0.5)
+move("grip", 45)  # raise the left shoulder
+time.sleep(0.5)
+
+
+time.sleep(0.5)
+driver.set_angle("wrist", 120)  # example of a raw call
+time.sleep(5)
+driver.home_all()
+
 
 # ----------------------------------------------------------------------
 # Keep the script alive for a short while so you can see the effects.
@@ -53,6 +62,7 @@ try:
     print("LED animation and servo movements are now running...")
     print("Press Ctrl‑C to shut down.")
     time.sleep(10)  # let the demo run for 10 seconds
+    body_led.pause()  # clear the LED strip
 except KeyboardInterrupt:
     print("\nShutting down …")
     body_led.pause()  # clear the LED strip

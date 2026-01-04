@@ -50,7 +50,7 @@ pwm:
     grip:
       channel: 3
       min_angle: 0
-      min_pulse: 2110
+      min_pulse: 2080
       max_angle: 90
       max_pulse: 3331
       default_angle: 0
