@@ -73,22 +73,29 @@ def _load_config() -> Dict[str, Any]:
     cfg_path = Path(__file__).resolve().parent / "config.yaml"
     if not cfg_path.is_file():
         raise FileNotFoundError(f"Configuration file not found: {cfg_path}")
-
+    print(f"Successfully found Configuration file:  {cfg_path}")
     try:
         with cfg_path.open("r", encoding="utf-8") as f:
             cfg = yaml.safe_load(f) or {}
+            print("Successfully loaded Configuration file")
     except yaml.YAMLError as exc:
         raise ValueError(f"Failed to parse config.yaml: {exc}") from exc
 
     if "i2c" not in cfg or "bus_number" not in cfg["i2c"]:
         raise KeyError("config.yaml must contain 'i2c.bus_number'.")
+    else:
+        print("Found bus_number in i2c")
     if (
         "device_address" not in cfg["i2c"]
         or "pwm_driver" not in cfg["i2c"]["device_address"]
     ):
         raise KeyError("config.yaml must contain 'i2c.device_address.pwm_driver'.")
+    else:
+        print("Found 'i2c.device_address.pwm_driver'")
     if "pwm" not in cfg or "default_freq" not in cfg["pwm"]:
         raise KeyError("config.yaml must contain 'pwm.default_freq'.")
+    else:
+        print("Found 'pwm.default_freq'")
 
     # Every servo entry must provide at least the pulse limits and a channel.
     for name, info in cfg["pwm"]["servos"].items():
@@ -168,9 +175,12 @@ class ServoDriver:
 
         for idx, (name, info) in enumerate(self._servo_defs.items()):
             self._servo_names.append(name)
-            self._min_pulse.append(info.get("min_pulse"))
-            self._max_pulse.append(info.get("max_pulse"))
-            self._default_angle.append(info.get("default_angle"))
+            min_pulse = float(info.get("min_pulse") or 0.0)
+            self._min_pulse.append(min_pulse)
+            max_pulse = float(info.get("max_pulse") or 0.0)
+            self._max_pulse.append(max_pulse)
+            default_angle = float(info.get("default_angle") or 0.0)
+            self._default_angle.append(default_angle)
             self._angle_limits.append(
                 (info.get("min_angle", 0), info.get("max_angle", 180))
             )
@@ -227,10 +237,13 @@ class ServoDriver:
         # ----> Use the *idx*‑th entries of the stored lists <----
         min_us = self._min_pulse[idx]
         max_us = self._max_pulse[idx]
-
+        print("Converting angle to pulse:\n")
+        print(
+            f"{int(min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us))}"
+        )
         # Linear interpolation between the two pulse limits.
-        return min_us + (angle - min_angle) / (max_angle - min_angle) * (
-            max_us - min_us
+        return int(
+            min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us)
         )
 
     def set_angle(self, servo_name: str, angle: float) -> None:
@@ -260,8 +273,8 @@ class ServoDriver:
 
         channel = self._channel_map[servo_name]
         # Use the upstream PCA9685 API – write the 12‑bit duty cycle directly.
-        duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
-        self._pca.channels[channel].duty_cycle = duty  # type: ignore[attr-defined]
+        # duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
+        self._pca.channels[channel].duty_cycle = pulse_us  # type: ignore[attr-defined]
 
     def set_pulse(self, servo_name: str, pulse: int) -> None:
         """
@@ -270,17 +283,24 @@ class ServoDriver:
         """
         if servo_name not in self._servo_defs:
             raise ValueError(f"Unknown servo name: {servo_name!r}")
-
+        print(f"Attempting to set pulse for: {servo_name}")
         idx = self._servo_index[servo_name]  # numeric index of the servo
+        print(f"Index of servo as {idx} with min_pulse of:")
         min_pulse = self._min_pulse[idx]
+        print(min_pulse, " and a max_pulse of")
         max_pulse = self._max_pulse[idx]
-
+        print(max_pulse, "\n")
+        print(
+            f"Pulse is attempting to be set to {pulse} clamping against min/max results in:"
+        )
         # Clamp to the servo's allowed pulse range.
         pulse_us = int(max(min_pulse, min(max_pulse, pulse)))
-
+        print(pulse_us, "\n attempting to send value to driver")
         channel = self._channel_map[servo_name]
+        print(f"servo channel found as {channel}")
         duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF
-        self._pca.channels[channel].duty_cycle = duty  # type: ignore[attr-defined]
+        print(f"calculated duty cycle as: {duty}\n Sending")
+        self._pca.channels[channel].duty_cycle = pulse_us  # type: ignore[attr-defined]
 
     def set_angle_by_channel(self, channel: int, angle: float) -> None:
         """
@@ -354,7 +374,8 @@ class ServoDriver:
     # def __exit__(self, exc_type, exc_val, exc_tb) -> None:
     #     self.close()
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self.close()
+        # self.close()
+        print("ending connection")
 
 
 # ---------------------------------------------------------------------------
@@ -385,7 +406,7 @@ def _cli() -> None:
         help="Desired angle in degrees (0‑180). Mutually exclusive with --pulse-us.",
     )
     parser.add_argument(
-        "--pulse-us",
+        "--pulse",
         type=int,
         default=None,
         help="Pulse width in microseconds. Mutually exclusive with --angle.",
@@ -399,22 +420,16 @@ def _cli() -> None:
     args = parser.parse_args()
 
     # Validate mutually exclusive arguments.
-    if (args.angle is None) == (args.pulse_us is None):
-        parser.error("Exactly one of '--angle' or '--pulse-us' must be provided.")
+    if (args.angle is None) == (args.pulse is None):
+        parser.error("Exactly one of '--angle' or '--pulse' must be provided.")
 
     # Load configuration.
-    cfg = _load_config()
-    address = cfg["i2c"]["device_address"]["pwm_driver"]
-    print("Loaded Address:", address)
+    # cfg = _load_config()
     # freq = args.freq if args.freq is not None else cfg["pwm"]["default_freq"]
 
     with ServoDriver() as driver:
         # Open bus and instantiate driver.
         try:
-            bus_addr = cfg["i2c"]["bus_number"]
-            # bus = SMBus(bus_addr)
-            print("Got bus:", bus_addr)
-
             # ---------------------------------------------------------------
             # Pick the requested operation (angle or pulse width) and convert
             # it to a 12‑bit duty cycle.  The conversion mirrors the logic
@@ -422,10 +437,12 @@ def _cli() -> None:
             # an explicit angle is supplied.
             # ---------------------------------------------------------------
             if args.angle is not None:
+                print(f"Setting {args.servo} to {args.angle} deg")
                 driver.set_angle(args.servo, args.angle)
                 print(f"Set {args.servo} to {args.angle} deg")
             else:
-                driver.set_pulse(args.servo, args.pulse_us)
+                print(f"Setting {args.servo} to {args.pulse} us")
+                driver.set_pulse(args.servo, args.pulse)
                 print(f"Set {args.servo} to {args.pulse} us")
         except Exception as e:
             print(f"Could not set {args.servo} encountered exception:\n", e)

@@ -28,37 +28,37 @@ pwm:
   servos:
     shoulder:
       channel: 0
-      min_angle: 90
-      min_pulse: 19328 # microseconds – corresponds to the minimum angle
-      max_angle: 135
-      max_pulse: 34587 # microseconds – corresponds to the maximum angle
-      default_angle: 90
+      min_angle: 30
+      min_pulse: 800 # microseconds – corresponds to the minimum angle
+      max_angle: 165
+      max_pulse: 3400 # microseconds – corresponds to the maximum angle
+      default_angle: 60
     elbow:
       channel: 1
       min_angle: -135
-      min_pulse: 17293
+      min_pulse: 1729
       max_angle: 0
-      max_pulse: 40181
-      default_angle: 45
+      max_pulse: 4018
+      default_angle: -135
     wrist:
       channel: 2
       min_angle: 0
-      min_pulse: 8138
+      min_pulse: 813
       max_angle: 180
-      max_pulse: 40385
+      max_pulse: 4038
       default_angle: 90
     grip:
       channel: 3
       min_angle: 0
-      min_pulse: 21108
+      min_pulse: 2110
       max_angle: 90
-      max_pulse: 33315
-      default_angle: 90
+      max_pulse: 3331
+      default_angle: 0
     camera:
       channel: 4
       min_angle: -15
-      min_pulse: 18311
+      min_pulse: 1800
       max_angle: 30
-      max_pulse: 24414
+      max_pulse: 2400
       default_angle: 0
     # Add more servos here as needed, following the same structure.
