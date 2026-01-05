@@ -16,12 +16,8 @@ i2c:
 # 2️⃣ PWM / Servo configuration (expanded)
 # -----------------------------------------------------------------
 pwm:
-  # Desired PWM frequency for all channels (Hz).  The driver will compute the
-  # appropriate prescale value from this value.
-  # Technically 24-100 "Hz", they move fast enough with 24 for our use case.
-  # I found that there was a roughly linear correlation with the frequency increase and
-  # the value assigned for an angle in that if you had a value of 2400 at 24hz you
-  # would set ~4x the value at 100hz (2400*4=9600) to maintain the same angle at the different hz.
+  # Desired PWM frequency for all channels (Hz).
+  # NOTE: THIS IS ALSO USED FOR M1-M4 AS THE MOTORS ARE PINNED TO THE PCA9685 CHANNELS 8-15
   default_freq: 24
   # Logical mapping of each servo.  The keys (e.g. base_joint) are just
   # convenient names; the values contain the hardware‑specific details.
@@ -61,4 +57,25 @@ pwm:
       max_angle: 30
       max_pulse: 2400
       default_angle: 0
-    # Add more servos here as needed, following the same structure.
+    # servo5: # pre-created servo reference
+    #   channel: 5
+    #   min_angle: -15
+    #   min_pulse: 1800
+    #   max_angle: 30
+    #   max_pulse: 2400
+    #   default_angle: 0
+    # servo6: # pre-created servo reference
+    #   channel: 6
+    #   min_angle: -15
+    #   min_pulse: 1800
+    #   max_angle: 30
+    #   max_pulse: 2400
+    #   default_angle: 0
+    # servo7: # pre-created servo reference
+    #   channel: 7
+    #   min_angle: -15
+    #   min_pulse: 1800
+    #   max_angle: 30
+    #   max_pulse: 2400
+    #   default_angle: 0
+    # NOTE: THIS BOARD ONLY ALLOWS FOR SERVOS TO BE PLACED ON CHANNELS 0-7 AS 8-15 ARE IN USE FOR M1-M4 (MOTORS)

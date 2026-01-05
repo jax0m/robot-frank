@@ -32,10 +32,12 @@ from typing import Dict, List, Any
 # ---------------------------------------------------------------------------
 
 from adafruit_pca9685 import PCA9685
-from smbus2 import (
-    SMBus,
-)  # Imported locally to keep import statements at the top level tidy.
 import board
+
+# ---------------------------------------------------------------------------
+# Global debug flag – set to True while you are actively debugging.
+# ---------------------------------------------------------------------------
+DEBUG = False  # ← flip to True when you want the diagnostic prints
 
 
 # ---------------------------------------------------------------------------
@@ -73,7 +75,10 @@ def _load_config() -> Dict[str, Any]:
     cfg_path = Path(__file__).resolve().parent / "config.yaml"
     if not cfg_path.is_file():
         raise FileNotFoundError(f"Configuration file not found: {cfg_path}")
-    # print(f"Successfully found Configuration file:  {cfg_path}") # Diagnostic output
+    if DEBUG:
+        print(
+            f"Successfully found Configuration file:  {cfg_path}"
+        )  # Diagnostic output
     try:
         with cfg_path.open("r", encoding="utf-8") as f:
             cfg = yaml.safe_load(f) or {}
@@ -83,19 +88,19 @@ def _load_config() -> Dict[str, Any]:
 
     if "i2c" not in cfg or "bus_number" not in cfg["i2c"]:
         raise KeyError("config.yaml must contain 'i2c.bus_number'.")
-    # else: # Diagnostic output
-    #     print("Found bus_number in i2c") # Diagnostic output
+    if DEBUG:
+        print("Found bus_number in i2c")  # Diagnostic output
     if (
         "device_address" not in cfg["i2c"]
         or "pwm_driver" not in cfg["i2c"]["device_address"]
     ):
         raise KeyError("config.yaml must contain 'i2c.device_address.pwm_driver'.")
-    # else: # Diagnostic output
-    #     print("Found 'i2c.device_address.pwm_driver'") # Diagnostic output
+    if DEBUG:
+        print("Found 'i2c.device_address.pwm_driver'")  # Diagnostic output
     if "pwm" not in cfg or "default_freq" not in cfg["pwm"]:
         raise KeyError("config.yaml must contain 'pwm.default_freq'.")
-    # else: # Diagnostic output
-    #     print("Found 'pwm.default_freq'") # Diagnostic output
+    if DEBUG:
+        print("Found 'pwm.default_freq'")  # Diagnostic output
 
     # Every servo entry must provide at least the pulse limits and a channel.
     for name, info in cfg["pwm"]["servos"].items():
@@ -152,11 +157,10 @@ class ServoDriver:
         self._bus = board.I2C()
 
         # Create the low‑level PCA9685 object – it takes an already‑opened
-        # ``SMBus`` instance and the 7‑bit address.
         self._pca = PCA9685(self._bus, address=self.address)
 
         # Apply the default PWM frequency.
-        self._pca.frequency = self.freq  # type: ignore[attr-defined]
+        self._pca.frequency = self.freq
 
         self._servo_defs: Dict[str, Dict[str, Any]] = cfg["pwm"]["servos"]
 
@@ -207,20 +211,6 @@ class ServoDriver:
             if (ch := info.get("channel"))
         }
 
-    @staticmethod
-    def _open_bus(bus) -> Any:
-        """
-        Open the I²C bus using the bus number defined in the configuration.
-
-        Returns
-        -------
-        smbus2.SMBus
-            An active SMBus instance.
-        """
-        return SMBus(
-            bus
-        )  # The bus number will be overridden by the config value later.
-
     # -----------------------------------------------------------------------
     # Public API
     # -----------------------------------------------------------------------
@@ -237,10 +227,10 @@ class ServoDriver:
         # ----> Use the *idx*‑th entries of the stored lists <----
         min_us = self._min_pulse[idx]
         max_us = self._max_pulse[idx]
-        # print("Converting angle to pulse:\n") # Diagnostic output
-        # print(
-        #     f"{int(min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us))}"
-        # ) # Diagnostic output
+        if DEBUG:
+            print(
+                f"Converting angle to pulse: {int(min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us))}"
+            )
         # Linear interpolation between the two pulse limits.
         return int(
             min_us + (angle - min_angle) / (max_angle - min_angle) * (max_us - min_us)
@@ -248,16 +238,21 @@ class ServoDriver:
 
     def set_angle(self, servo_name: str, angle: float) -> None:
         """
-        Move the specified servo (identified by its logical name in
-        ``config.yaml``) to *angle* degrees.
+        Position a logical servo to a specific angle.
 
-        The method:
-          1. Verifies that ``servo_name`` exists.
-          2. Looks up the hardware channel number.
-          3. Clamps *angle* to the servo‑specific ``min_angle`` / ``max_angle``.
-          4. Converts the clamped angle to a pulse width using the servo’s
-             ``min_pulse`` / ``max_pulse`` limits.
-          5. Writes the pulse to the appropriate channel register.
+        Parameters
+        ----------
+        servo_name : str
+            The name of the servo as defined in the ``servos`` section of
+            ``config.yaml`` (e.g. ``"shoulder"``).
+        angle : float
+            Desired angle in degrees.  The value is clamped to the servo's
+            ``min_angle`` / ``max_angle`` limits defined in the configuration.
+
+        Raises
+        ------
+        ValueError
+            If ``servo_name`` does not exist in the configuration.
         """
         if servo_name not in self._servo_defs:
             raise ValueError(f"Unknown servo name: {servo_name!r}")
@@ -269,38 +264,40 @@ class ServoDriver:
         angle = max(min_angle, min(max_angle, angle))
 
         # Compute pulse width using the per‑servo pulse limits.
-        pulse_us = self._pulse_from_angle(angle, idx)
+        pulse_us = int(self._pulse_from_angle(angle, idx))
 
         channel = self._channel_map[servo_name]
         # Use the upstream PCA9685 API – write the 12‑bit duty cycle directly. #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
         # duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
-        self._pca.channels[channel].duty_cycle = pulse_us  # type: ignore[attr-defined]
+        self._pca.channels[channel].duty_cycle = pulse_us
 
     def set_pulse(self, servo_name: str, pulse: int) -> None:
         """
-        Move the specified servo (identified by its logical name in
-        ``config.yaml``) to *pulse* microseconds.
+        Move a servo to an explicit pulse width (µs)
+
+        Parameters
+        ----------
+        servo_name : str
+            The name of the servo as defined in the ``servos`` section of
+            ``config.yaml`` (e.g. ``"shoulder"``).
+        pulse : int
+            Desired pulse width in us.  The value is clamped to the servo's
+            ``min_pulse`` / ``max_pulse`` limits defined in the configuration.
+
+        Raises
+        ------
+        ValueError
+            If ``servo_name`` does not exist in the configuration.
         """
         if servo_name not in self._servo_defs:
             raise ValueError(f"Unknown servo name: {servo_name!r}")
-        # print(f"Attempting to set pulse for: {servo_name}") # Diagnostic output
-        idx = self._servo_index[servo_name]  # numeric index of the servo
-        # print(f"Index of servo as {idx} with min_pulse of:") # Diagnostic output
-        min_pulse = self._min_pulse[idx]
-        # print(min_pulse, " and a max_pulse of") # Diagnostic output
-        max_pulse = self._max_pulse[idx]
-        # print(max_pulse, "\n") # Diagnostic output
-        # print(
-        #     f"Pulse is attempting to be set to {pulse} clamping against min/max results in:"
-        # ) # Diagnostic output
-        # Clamp to the servo's allowed pulse range.
+
+        idx = self._servo_index[servo_name]
+        min_pulse, max_pulse = self._min_pulse[idx], self._max_pulse[idx]
+
         pulse_us = int(max(min_pulse, min(max_pulse, pulse)))
-        # print(pulse_us, "\n attempting to send value to driver") # Diagnostic output
         channel = self._channel_map[servo_name]
-        # print(f"servo channel found as {channel}") # Diagnostic output
-        # duty = int(round(pulse_us * 4096 / 1_000_000)) & 0xFFF #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
-        # print(f"calculated duty cycle as: {duty}\n Sending") #This was commented out for now as the duty_cycle command seems to want to take the pulse_us more directly.
-        self._pca.channels[channel].duty_cycle = pulse_us  # type: ignore[attr-defined]
+        self._pca.channels[channel].duty_cycle = pulse_us
 
     def set_angle_by_channel(self, channel: int, angle: float) -> None:
         """
@@ -338,11 +335,10 @@ class ServoDriver:
 
     def close(self) -> None:
         """
-        Close the underlying ``SMBus`` connection and release the I²C
+        Close the underlying connection and release the I²C
         resources.  After calling this method the driver instance must not
         be used any further.
         """
-        # self._bus.close()
         self._pca.deinit
 
     # -----------------------------------------------------------------------
@@ -373,7 +369,6 @@ class ServoDriver:
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.close()
-        print("ending connection")
 
 
 # ---------------------------------------------------------------------------
@@ -385,6 +380,23 @@ def _cli() -> None:
     servo channel to a specific pulse width or angle.  The CLI parses the
     same ``config.yaml`` used by the library, so any changes made there
     are immediately reflected here.
+
+    Parameters
+    ----------
+    --servo : str (required)
+        The name of the servo as defined in the ``servos`` section of
+        ``config.yaml`` (e.g. ``"shoulder"``).
+    --angle : float (required if pulse is not specified)
+        Desired angle in degrees.  The value is clamped to the servo's
+        ``min_angle`` / ``max_angle`` limits defined in the configuration.
+    --pulse : int (required if angle is not specified)
+        Desired pulse width in us.  The value is clamped to the servo's
+        ``min_pulse`` / ``max_pulse`` limits defined in the configuration.
+    --freq: int (optional)
+        Overrides the default frequency defined in the ``config.yaml``
+    --debug: store_true (existence check flag) (optional)
+        when included in the cli this will enable the debugging flags used for
+        printing diagnostic output at a more verbose level.
     """
     import argparse
 
@@ -415,7 +427,17 @@ def _cli() -> None:
         default=None,
         help="Override the PWM frequency defined in config.yaml.",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable verbose diagnostic output (sets DEBUG = True).",
+    )
     args = parser.parse_args()
+
+    global DEBUG
+    if args.debug:
+        DEBUG = True
+        print("[DEBUG] Debug mode ENABLED – diagnostic prints will appear.")
 
     # Validate mutually exclusive arguments.
     if (args.angle is None) == (args.pulse is None):
@@ -435,13 +457,17 @@ def _cli() -> None:
             # an explicit angle is supplied.
             # ---------------------------------------------------------------
             if args.angle is not None:
-                print(f"Setting {args.servo} to {args.angle} deg")
+                if DEBUG:
+                    print(f"Setting {args.servo} to {args.angle} deg")
                 driver.set_angle(args.servo, args.angle)
-                print(f"Set {args.servo} to {args.angle} deg")
+                if DEBUG:
+                    print(f"Set {args.servo} to {args.angle} deg")
             else:
-                print(f"Setting {args.servo} to {args.pulse} us")
+                if DEBUG:
+                    print(f"Setting {args.servo} to {args.pulse} us")
                 driver.set_pulse(args.servo, args.pulse)
-                print(f"Set {args.servo} to {args.pulse} us")
+                if DEBUG:
+                    print(f"Set {args.servo} to {args.pulse} us")
         except Exception as e:
             print(f"Could not set {args.servo} encountered exception:\n", e)
 
