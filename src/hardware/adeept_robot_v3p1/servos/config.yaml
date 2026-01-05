@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------
-# 1️⃣ I²C / bus configuration
+# 1 I²C / bus configuration
 # -----------------------------------------------------------------
 i2c:
   # Linux I²C bus number that the PCA9685 is connected to.
@@ -16,7 +16,7 @@ i2c:
   default_freq: 24
 
 # -----------------------------------------------------------------
-# 2️⃣ Servo configuration
+# 2 Servo configuration
 # -----------------------------------------------------------------
 # Logical mapping of each servo.  The keys (e.g. base_joint) are just
 # convenient names; the values contain the hardware‑specific details.
@@ -57,24 +57,58 @@ servos:
     max_pulse: 2400
     default_angle: 0
   # servo5: # pre-created servo reference
-  #   channel: 5
-  #   min_angle: -15
-  #   min_pulse: 1800
-  #   max_angle: 30
-  #   max_pulse: 2400
-  #   default_angle: 0
+  #     channel: 5
+  #     min_angle: -15
+  #     min_pulse: 1800
+  #     max_angle: 30
+  #     max_pulse: 2400
+  #     default_angle: 0
   # servo6: # pre-created servo reference
-  #   channel: 6
-  #   min_angle: -15
-  #   min_pulse: 1800
-  #   max_angle: 30
-  #   max_pulse: 2400
-  #   default_angle: 0
+  #     channel: 6
+  #     min_angle: -15
+  #     min_pulse: 1800
+  #     max_angle: 30
+  #     max_pulse: 2400
+  #     default_angle: 0
   # servo7: # pre-created servo reference
-  #   channel: 7
-  #   min_angle: -15
-  #   min_pulse: 1800
-  #   max_angle: 30
-  #   max_pulse: 2400
-  #   default_angle: 0
+  #     channel: 7
+  #     min_angle: -15
+  #     min_pulse: 1800
+  #     max_angle: 30
+  #     max_pulse: 2400
+  #     default_angle: 0
   # NOTE: THIS BOARD ONLY ALLOWS FOR SERVOS TO BE PLACED ON CHANNELS 0-7 AS 8-15 ARE IN USE FOR M1-M4 (MOTORS)
+
+# -----------------------------------------------------------------
+# 3 Motor configuration
+# -----------------------------------------------------------------
+# Logical mapping of each motor.  The keys (e.g. ) are just
+# convenient names; the values contain the hardware‑specific details.
+# For the Rasptank Metal the motor configuration is:
+#   Front=Camera/Ultrasonic sensor
+#      ^
+# xx _---_ xx
+#   |     |
+#   |     |
+#   |     |
+# M2|_____|M1
+#
+# Notes:
+#   - "xx" in the front are dummy wheels used with the tank treads and have no motors to drive
+#   - M3 and M4 are unused in the default configuration.
+# Pole Mapping:
+#   M1 "Right"
+#       Postive:  Pin 15 - Odd
+#       Negative: Pin 14 - Even
+#   M2 "Left"
+#       Postive:  Pin 12 - Even
+#       Negative: Pin 13 - Odd
+#   M3 Unused
+#       Postive:  Pin 11 - Odd
+#       Negative: Pin 10 - Even
+#   M4 Unused
+#       Postive:  Pin 8 - Even
+#       Negative: Pin 9 - Odd
+# Notes:
+#   - Pay attention to the pole assignment as Motors 1/3 have Postive on the "Odd" pins vs 2/4 have the Positive on the "Even" pins.
+motors:
