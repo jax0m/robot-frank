@@ -16,66 +16,65 @@ i2c:
   default_freq: 24
 
 # -----------------------------------------------------------------
-# 2️⃣ PWM / Servo configuration (expanded)
+# 2️⃣ Servo configuration
 # -----------------------------------------------------------------
-pwm:
-  # Logical mapping of each servo.  The keys (e.g. base_joint) are just
-  # convenient names; the values contain the hardware‑specific details.
-  servos:
-    shoulder:
-      channel: 0
-      min_angle: 30
-      min_pulse: 800 # microseconds – corresponds to the minimum angle
-      max_angle: 165
-      max_pulse: 3400 # microseconds – corresponds to the maximum angle
-      default_angle: 60
-    elbow:
-      channel: 1
-      min_angle: -135
-      min_pulse: 1729
-      max_angle: 0
-      max_pulse: 4018
-      default_angle: -135
-    wrist:
-      channel: 2
-      min_angle: 0
-      min_pulse: 813
-      max_angle: 180
-      max_pulse: 4038
-      default_angle: 90
-    grip:
-      channel: 3
-      min_angle: 0
-      min_pulse: 2080
-      max_angle: 90
-      max_pulse: 3331
-      default_angle: 0
-    camera:
-      channel: 4
-      min_angle: -15
-      min_pulse: 1800
-      max_angle: 30
-      max_pulse: 2400
-      default_angle: 0
-    # servo5: # pre-created servo reference
-    #   channel: 5
-    #   min_angle: -15
-    #   min_pulse: 1800
-    #   max_angle: 30
-    #   max_pulse: 2400
-    #   default_angle: 0
-    # servo6: # pre-created servo reference
-    #   channel: 6
-    #   min_angle: -15
-    #   min_pulse: 1800
-    #   max_angle: 30
-    #   max_pulse: 2400
-    #   default_angle: 0
-    # servo7: # pre-created servo reference
-    #   channel: 7
-    #   min_angle: -15
-    #   min_pulse: 1800
-    #   max_angle: 30
-    #   max_pulse: 2400
-    #   default_angle: 0
-    # NOTE: THIS BOARD ONLY ALLOWS FOR SERVOS TO BE PLACED ON CHANNELS 0-7 AS 8-15 ARE IN USE FOR M1-M4 (MOTORS)
+# Logical mapping of each servo.  The keys (e.g. base_joint) are just
+# convenient names; the values contain the hardware‑specific details.
+servos:
+  shoulder:
+    channel: 0
+    min_angle: 30
+    min_pulse: 800 # microseconds – corresponds to the minimum angle
+    max_angle: 165
+    max_pulse: 3400 # microseconds – corresponds to the maximum angle
+    default_angle: 60
+  elbow:
+    channel: 1
+    min_angle: -135
+    min_pulse: 1729
+    max_angle: 0
+    max_pulse: 4018
+    default_angle: -135
+  wrist:
+    channel: 2
+    min_angle: 0
+    min_pulse: 813
+    max_angle: 180
+    max_pulse: 4038
+    default_angle: 90
+  grip:
+    channel: 3
+    min_angle: 0
+    min_pulse: 2080
+    max_angle: 90
+    max_pulse: 3331
+    default_angle: 0
+  camera:
+    channel: 4
+    min_angle: -15
+    min_pulse: 1800
+    max_angle: 30
+    max_pulse: 2400
+    default_angle: 0
+  # servo5: # pre-created servo reference
+  #   channel: 5
+  #   min_angle: -15
+  #   min_pulse: 1800
+  #   max_angle: 30
+  #   max_pulse: 2400
+  #   default_angle: 0
+  # servo6: # pre-created servo reference
+  #   channel: 6
+  #   min_angle: -15
+  #   min_pulse: 1800
+  #   max_angle: 30
+  #   max_pulse: 2400
+  #   default_angle: 0
+  # servo7: # pre-created servo reference
+  #   channel: 7
+  #   min_angle: -15
+  #   min_pulse: 1800
+  #   max_angle: 30
+  #   max_pulse: 2400
+  #   default_angle: 0
+  # NOTE: THIS BOARD ONLY ALLOWS FOR SERVOS TO BE PLACED ON CHANNELS 0-7 AS 8-15 ARE IN USE FOR M1-M4 (MOTORS)

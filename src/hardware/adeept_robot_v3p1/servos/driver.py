@@ -56,15 +56,13 @@ def _load_config() -> Dict[str, Any]:
           device_address:
             pwm_driver: 0x40            # 7‑bit address of the PCA9685
           default_freq: 24              # Desired PWM frequency in Hz
-
-        pwm:
-          servos:
-            base_joint:
-              channel: 0
-              min_pulse: 150
-              max_pulse: 600
-              default_angle: 90
-            # …additional servos…
+        servos:
+          base_joint:
+            channel: 0
+            min_pulse: 150
+            max_pulse: 600
+            default_angle: 90
+          # …additional servos…
 
     Returns
     -------
@@ -102,7 +100,7 @@ def _load_config() -> Dict[str, Any]:
         print("Found 'i2c.default_freq'")  # Diagnostic output
 
     # Every servo entry must provide at least the pulse limits and a channel.
-    for name, info in cfg["pwm"]["servos"].items():
+    for name, info in cfg["servos"].items():
         for req in ("channel", "min_pulse", "max_pulse", "default_angle"):
             if req not in info:
                 raise KeyError(f"Servo '{name}' is missing required key '{req}'.")
@@ -161,7 +159,7 @@ class ServoDriver:
         # Apply the default PWM frequency.
         self._pca.frequency = self.freq
 
-        self._servo_defs: Dict[str, Dict[str, Any]] = cfg["pwm"]["servos"]
+        self._servo_defs: Dict[str, Dict[str, Any]] = cfg["servos"]
 
         # Mapping ``servo_name → channel`` (hardware channel 0‑15)
         self._channel_map: Dict[str, int] = {
