@@ -55,17 +55,16 @@ def _load_config() -> Dict[str, Any]:
           bus_number: 0                 # Linux I²C bus (e.g. 0 → /dev/i2c-0)
           device_address:
             pwm_driver: 0x40            # 7‑bit address of the PCA9685
+          default_freq: 24              # Desired PWM frequency in Hz
 
         pwm:
-          default_freq: 50              # Desired PWM frequency in Hz
-
-        servos:
-          base_joint:
-            channel: 0
-            min_pulse: 150
-            max_pulse: 600
-            default_angle: 90
-          # …additional servos…
+          servos:
+            base_joint:
+              channel: 0
+              min_pulse: 150
+              max_pulse: 600
+              default_angle: 90
+            # …additional servos…
 
     Returns
     -------
@@ -97,10 +96,10 @@ def _load_config() -> Dict[str, Any]:
         raise KeyError("config.yaml must contain 'i2c.device_address.pwm_driver'.")
     if DEBUG:
         print("Found 'i2c.device_address.pwm_driver'")  # Diagnostic output
-    if "pwm" not in cfg or "default_freq" not in cfg["pwm"]:
-        raise KeyError("config.yaml must contain 'pwm.default_freq'.")
+    if "i2c" not in cfg or "default_freq" not in cfg["i2c"]:
+        raise KeyError("config.yaml must contain 'i2c.default_freq'.")
     if DEBUG:
-        print("Found 'pwm.default_freq'")  # Diagnostic output
+        print("Found 'i2c.default_freq'")  # Diagnostic output
 
     # Every servo entry must provide at least the pulse limits and a channel.
     for name, info in cfg["pwm"]["servos"].items():
@@ -151,7 +150,7 @@ class ServoDriver:
         # Store configuration values that will be used throughout the class.
         self.bus_number: int = cfg["i2c"]["bus_number"]
         self.address: int = cfg["i2c"]["device_address"]["pwm_driver"]
-        self.freq: float = cfg["pwm"]["default_freq"]
+        self.freq: float = cfg["i2c"]["default_freq"]
 
         # Open the I²C bus exactly once.
         self._bus = board.I2C()
@@ -445,7 +444,7 @@ def _cli() -> None:
 
     # Load configuration.
     # cfg = _load_config()
-    # freq = args.freq if args.freq is not None else cfg["pwm"]["default_freq"]
+    # freq = args.freq if args.freq is not None else cfg["i2c"]["default_freq"]
 
     with ServoDriver() as driver:
         # Open bus and instantiate driver.

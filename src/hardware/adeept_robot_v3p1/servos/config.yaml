@@ -11,14 +11,14 @@ i2c:
   # is wired to a different address.
   device_address:
     pwm_driver: 0x5F
+  # Desired PWM frequency for all channels (Hz).
+  # NOTE: THIS IS ALSO USED FOR M1-M4 AS THE MOTORS ARE PINNED TO THE PCA9685 CHANNELS 8-15
+  default_freq: 24
 
 # -----------------------------------------------------------------
 # 2️⃣ PWM / Servo configuration (expanded)
 # -----------------------------------------------------------------
 pwm:
-  # Desired PWM frequency for all channels (Hz).
-  # NOTE: THIS IS ALSO USED FOR M1-M4 AS THE MOTORS ARE PINNED TO THE PCA9685 CHANNELS 8-15
-  default_freq: 24
   # Logical mapping of each servo.  The keys (e.g. base_joint) are just
   # convenient names; the values contain the hardware‑specific details.
   servos:
